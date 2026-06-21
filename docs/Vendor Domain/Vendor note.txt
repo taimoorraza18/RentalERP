@@ -1,0 +1,270 @@
+# RentalERP v1.0
+
+# VendorDomain_012_VendorNote.docx
+
+---
+
+# Document Information
+
+**Project:** RentalERP v1.0
+
+**Domain:** Vendor
+
+**Entity:** VendorNote
+
+**Architecture:** Domain Driven Design (DDD)
+
+**Database:** Microsoft SQL Server
+
+**Application:** .NET Core Web API + Angular
+
+**Status:** Complete
+
+**Version:** 1.0
+
+---
+
+# Table Classification
+
+**Domain:** Vendor Domain
+
+**Table Name:** VendorNote
+
+**Classification:** Bridge Table
+
+**Aggregate Root:** No
+
+---
+
+# Purpose
+
+VendorNote associates Vendor records with reusable Note entities maintained within the Shared Kernel.
+
+This table allows users to attach unlimited business notes to a Vendor without duplicating note storage.
+
+Typical notes include:
+
+- Procurement discussions
+- Vendor evaluation comments
+- Payment follow-up
+- Quality observations
+- Compliance remarks
+- Internal purchasing comments
+- Contract negotiation history
+- Blacklisting reasons
+- Audit observations
+
+The actual note content is stored inside the Shared Kernel **Note** table while VendorNote simply establishes the business relationship.
+
+---
+
+# Dependencies
+
+Depends On
+
+- Vendor
+- Note (Shared Kernel)
+
+Referenced By
+
+- Vendor Detail Screen
+- Purchase Module
+- Vendor Profile
+- Audit Reports
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| VendorNoteId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| VendorId | BIGINT | No | | | ✔ | Vendor |
+| NoteId | BIGINT | No | | | ✔ | Shared Kernel Note |
+| StatusId | SMALLINT | No | 1 | | | Active / Inactive |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_VendorNote
+
+---
+
+## Foreign Keys
+
+- VendorId → Vendor
+- NoteId → Note
+
+---
+
+## Unique Keys
+
+- UQ_Vendor_Note (VendorId, NoteId)
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_VendorNote
+
+---
+
+## Non Clustered
+
+IX_Vendor
+
+IX_Note
+
+IX_Status
+
+---
+
+# Relationships
+
+Vendor (1) → VendorNote (Many)
+
+Note (1) → VendorNote (Many)
+
+---
+
+# Business Rules
+
+- Unlimited notes may be attached to a Vendor.
+- A Vendor cannot reference the same Note more than once.
+- Notes remain reusable within the Shared Kernel.
+- Deleting VendorNote does not delete the Note.
+- Vendor ownership belongs to Vendor Domain.
+- Soft Delete only.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- VendorNoteAdded
+- VendorNoteUpdated
+- VendorNoteRemoved
+
+---
+
+# Consumed Domain Events
+
+- NoteCreated
+- NoteUpdated
+- NoteDeleted
+
+---
+
+# Security
+
+## Create
+
+- Vendor.Create
+- Vendor.Edit
+
+## Update
+
+- Vendor.Edit
+
+## Delete
+
+- Vendor.Delete
+
+## View
+
+- Vendor.View
+
+---
+
+# Validation Rules
+
+| Field | Validation |
+|--------|------------|
+| VendorId | Required |
+| NoteId | Required |
+| StatusId | Required |
+| Vendor + Note | Must be unique |
+
+---
+
+# UI Behavior
+
+## Vendor Detail Screen
+
+Tab:
+
+**Notes**
+
+Grid Columns
+
+- Note Title
+- Category
+- Created By
+- Created Date
+- Last Modified
+- Status
+
+Toolbar
+
+- Add Existing Note
+- Create Note
+- Open Note
+- Remove Note
+
+Double-click opens the Shared Kernel Note editor.
+
+---
+
+# Workflow
+
+1. User opens Vendor.
+2. Opens **Notes** tab.
+3. Creates or links an existing Shared Note.
+4. System inserts VendorNote bridge record.
+5. Note immediately becomes visible under Vendor history.
+
+---
+
+# Integration
+
+Integrated With
+
+- Shared Kernel (Note)
+- Purchase Domain
+- Workflow Engine
+- Notification Module
+- Reporting Module
+- Audit Module
+
+---
+
+# Developer Notes
+
+- Implements the Shared Kernel Bridge Pattern.
+- No business text is stored in this table.
+- Note content remains centralized inside the Shared Kernel.
+- Supports unlimited reusable notes.
+- Prevents duplication of note records.
+- Fully consistent with VendorAttachment, VendorActivity and VendorTimeline.
+
+---
+
+# Status
+
+**VendorDomain_012_VendorNote**
+
+**Status:** ✅ Complete

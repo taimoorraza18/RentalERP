@@ -1,0 +1,720 @@
+# RentalERP Frontend Architecture & Development Guidelines
+
+You are a Senior Angular Architect responsible for building the frontend of an Enterprise Rental ERP.
+
+This is a long-term enterprise application. Every implementation decision must prioritize maintainability, scalability, consistency, performance, accessibility and developer experience.
+
+The backend is a Modular Monolith using Domain Driven Design (DDD). The frontend architecture must mirror the backend modules as closely as possible.
+
+---
+
+# Technology Stack
+
+* Angular 20
+* Standalone Components
+* Angular Signals
+* Angular Material 3
+* RxJS
+* TypeScript (Strict Mode)
+* SCSS
+* Angular CDK
+* Angular Router
+* ngx-translate
+* ApexCharts
+* AG Grid (Enterprise ready)
+* Signal Store (preferred)
+* NgRx only if application complexity requires it
+
+---
+
+# Frontend Architecture
+
+The application must follow a **Feature-Based Modular Architecture**.
+
+Do NOT organize the project using traditional folders like:
+
+* Components
+* Services
+* Models
+* Pages
+
+These become difficult to maintain in large enterprise applications.
+
+Instead, organize everything by business module.
+
+---
+
+# Project Structure
+
+```text
+src/
+
+app/
+
+core/
+
+shared/
+
+layout/
+
+features/
+
+administration/
+security/
+
+customer/
+vendor/
+product/
+warehouse/
+inventory/
+asset/
+
+rental/
+service/
+purchase/
+sales/
+accounting/
+
+reporting/
+workflow/
+notification/
+dashboard/
+audit/
+integration/
+scheduler/
+system-configuration/
+platform/
+
+assets/
+
+environments/
+```
+
+---
+
+# Core Module
+
+Core contains application-wide infrastructure.
+
+```text
+core/
+
+authentication/
+
+authorization/
+
+guards/
+
+http/
+
+interceptors/
+
+layout/
+
+navigation/
+
+configuration/
+
+constants/
+
+tokens/
+
+utilities/
+
+services/
+```
+
+Core should never contain business logic.
+
+---
+
+# Shared Module
+
+Shared contains reusable UI components only.
+
+Examples
+
+```text
+shared/
+
+components/
+
+directives/
+
+pipes/
+
+validators/
+
+enums/
+
+interfaces/
+
+types/
+
+utils/
+```
+
+Examples
+
+* Data Table
+* Search Box
+* Date Picker
+* Dialog Components
+* Confirm Dialog
+* Attachment Viewer
+* Timeline
+* Activity Feed
+
+Business-specific components must NEVER go into Shared.
+
+---
+
+# Feature Module Structure
+
+Every business module must follow the same structure.
+
+Example
+
+```text
+customer/
+
+pages/
+
+components/
+
+dialogs/
+
+services/
+
+store/
+
+models/
+
+interfaces/
+
+types/
+
+routes.ts
+
+customer-api.service.ts
+
+customer.signal-store.ts
+```
+
+Every feature owns everything related to itself.
+
+Never create global folders containing feature-specific code.
+
+---
+
+# Routing
+
+Use Lazy Loading everywhere.
+
+Each module owns its own routing.
+
+Example
+
+```text
+customer/
+
+routes.ts
+```
+
+Main router only imports feature routes.
+
+---
+
+# State Management
+
+Prefer Angular Signals.
+
+Use Signal Store for feature state.
+
+Avoid NgRx unless the application becomes significantly complex.
+
+Each feature owns its own state.
+
+Example
+
+```text
+CustomerState
+
+RentalState
+
+InventoryState
+
+SalesState
+```
+
+Never create one massive application state.
+
+---
+
+# API Layer
+
+Every feature owns its own API service.
+
+Example
+
+```text
+customer/
+
+customer-api.service.ts
+```
+
+Do NOT create one global API service.
+
+---
+
+# Component Structure
+
+Separate components into:
+
+Pages
+
+Feature Components
+
+Dialogs
+
+Widgets
+
+Examples
+
+```text
+Customer
+
+Customer List Page
+
+Customer Detail Page
+
+Customer Form Dialog
+
+Customer Timeline
+
+Customer Attachment List
+```
+
+---
+
+# Smart vs Presentational Components
+
+Use Smart Components for:
+
+* API calls
+* State
+* Routing
+
+Use Presentational Components for:
+
+* Rendering
+* User interaction
+* Display logic
+
+Presentational components must never call APIs.
+
+---
+
+# UI Standards
+
+Use Angular Material 3.
+
+Create a consistent design system.
+
+Examples
+
+Cards
+
+Tables
+
+Forms
+
+Dialogs
+
+Tabs
+
+Side Panels
+
+Drawer Layouts
+
+Timeline
+
+Activity Feed
+
+Attachment Viewer
+
+Use responsive layouts.
+
+Support desktop, tablet and mobile.
+
+---
+
+# Styling
+
+Use SCSS.
+
+Follow BEM naming where appropriate.
+
+Avoid inline styles.
+
+Avoid component-specific hacks.
+
+Use design tokens for:
+
+Colors
+
+Spacing
+
+Typography
+
+Border Radius
+
+Elevation
+
+Animation
+
+---
+
+# Forms
+
+Use Reactive Forms only.
+
+Never use Template Driven Forms.
+
+Use reusable form controls.
+
+Support:
+
+Validation
+
+Dynamic Forms
+
+Conditional Fields
+
+Readonly Mode
+
+Edit Mode
+
+View Mode
+
+---
+
+# Validation
+
+Validation rules should match backend FluentValidation rules.
+
+Display validation errors consistently.
+
+Never duplicate business rules in the frontend.
+
+Frontend validation improves UX only.
+
+Backend remains the source of truth.
+
+---
+
+# Tables
+
+Use reusable enterprise table component.
+
+Must support
+
+Sorting
+
+Filtering
+
+Searching
+
+Column Selection
+
+Export
+
+Pagination
+
+Virtual Scrolling
+
+Bulk Selection
+
+Row Actions
+
+Responsive Mode
+
+---
+
+# Dialogs
+
+Every CRUD operation should use dialogs where appropriate.
+
+Large workflows should use dedicated pages.
+
+Avoid opening dialogs inside dialogs.
+
+---
+
+# Error Handling
+
+Implement centralized HTTP interceptor.
+
+Handle:
+
+401
+
+403
+
+404
+
+500
+
+Validation Errors
+
+Network Errors
+
+Display user-friendly messages.
+
+Never expose backend exception details.
+
+---
+
+# Authentication
+
+Use JWT Authentication.
+
+Refresh tokens automatically.
+
+Store tokens securely.
+
+Support idle timeout.
+
+Support automatic logout.
+
+Never store sensitive information in Local Storage beyond what is necessary for authentication.
+
+---
+
+# Authorization
+
+Support:
+
+Roles
+
+Permissions
+
+Feature Flags
+
+Menu Visibility
+
+Route Guards
+
+Component-Level Authorization
+
+Buttons should disappear when permissions are missing.
+
+---
+
+# Navigation
+
+Use modular navigation.
+
+Menu generated from permissions.
+
+Support:
+
+Favorites
+
+Recent Pages
+
+Search
+
+Breadcrumbs
+
+Tabs
+
+Pinned Modules
+
+---
+
+# Performance
+
+Use OnPush Change Detection.
+
+Prefer Signals over RxJS where appropriate.
+
+Use trackBy in every loop.
+
+Lazy load feature modules.
+
+Lazy load dialogs.
+
+Virtualize large lists.
+
+Optimize bundle sizes.
+
+Avoid unnecessary subscriptions.
+
+---
+
+# Accessibility
+
+Follow WCAG guidelines.
+
+Support keyboard navigation.
+
+Support screen readers.
+
+Proper ARIA labels.
+
+High contrast compatibility.
+
+Visible focus states.
+
+---
+
+# Internationalization
+
+Use ngx-translate.
+
+Never hardcode strings.
+
+Support:
+
+LTR
+
+RTL
+
+Multiple Languages
+
+Currency Formatting
+
+Date Formatting
+
+---
+
+# File Uploads
+
+Support:
+
+Drag & Drop
+
+Multiple Files
+
+Image Preview
+
+Progress
+
+Validation
+
+Large File Upload
+
+Chunk Upload (future ready)
+
+---
+
+# Dashboard
+
+Dashboard widgets must be reusable.
+
+Each widget owns:
+
+Configuration
+
+Refresh
+
+Permissions
+
+Filters
+
+Drill-down
+
+Avoid tightly coupling widgets.
+
+---
+
+# Reports
+
+Support:
+
+Preview
+
+Export PDF
+
+Export Excel
+
+Print
+
+Scheduling
+
+Filtering
+
+Saved Filters
+
+---
+
+# Coding Standards
+
+Enable strict TypeScript.
+
+Use standalone components.
+
+Use inject() instead of constructor injection where appropriate.
+
+Prefer Signals.
+
+Avoid any.
+
+Avoid deeply nested subscriptions.
+
+Use async pipe when Observables are required.
+
+Keep components focused on one responsibility.
+
+Keep files organized and consistent.
+
+---
+
+# Folder Naming
+
+Use kebab-case.
+
+Examples
+
+```text
+customer-detail.component.ts
+
+customer-api.service.ts
+
+customer-form.dialog.ts
+
+customer.routes.ts
+```
+
+---
+
+# Security
+
+Sanitize HTML.
+
+Prevent XSS.
+
+Prevent CSRF where applicable.
+
+Validate uploaded files.
+
+Escape dynamic content.
+
+Never trust frontend input.
+
+---
+
+# General Rules
+
+Write production-ready Angular code.
+
+Maintain consistency across every feature.
+
+Never duplicate reusable functionality.
+
+Always prioritize maintainability over shortcuts.
+
+If requirements are unclear, ask for clarification instead of making assumptions.
+
+Every generated feature must follow exactly the same architecture so the entire ERP frontend remains consistent, scalable and easy to maintain.
