@@ -145,65 +145,87 @@ src/
 
 app/
 
-core/
+├── core/
 
-infrastructure/
+├── infrastructure/
 
-shared/
+├── shared/
 
-layout/
+├── layout/
 
-features/
+├── features/
 
-administration/
+|   ├── foundation/
 
-security/
+│   |   ├── administration/
 
-customer/
+│   |   ├── security/
 
-vendor/
+│   |   ├── dashboard/
 
-product/
+│   |   └── system-configuration/
 
-warehouse/
+│   |
+|   ├── masters/
 
-inventory/
+│   |   ├── customer/
 
-asset/
+│   |   ├── vendor/
 
-rental/
+│   |   ├── product/
 
-service/
+│   |   ├── warehouse/
 
-purchase/
+│   |   └── asset/
 
-sales/
+│   |
 
-accounting/
+|   ├── operations/
 
-reporting/
+|   │   ├── rental/
 
-workflow/
+|   │   ├── service/
 
-notification/
+|   │   ├── purchase/
 
-dashboard/
+|   │   ├── sales/
 
-audit/
+|   │   └── inventory/
 
-integration/
+|   │
 
-scheduler/
+|   ├── finance/
 
-system-configuration/
+|   │   ├── accounting/
 
-platform/
+|   │   └── reporting/
+
+|   │
+
+|   └── platform/
+
+|       ├── workflow/
+
+|       ├── notification/
+
+|       ├── audit/
+
+|       ├── integration/
+
+|       └── scheduler/
+
+|
+├── app.component.ts
+
+├── app.config.ts
+
+└── app.routes.ts
 
 assets/
 
 environments/
 
----
+styles/
 
 # 6. Core Layer
 

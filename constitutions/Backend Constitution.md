@@ -9,7 +9,7 @@ This is a long-term project. Every implementation decision must prioritize maint
 * .NET 9
 * ASP.NET Core Web API
 * Entity Framework Core
-* SQL Server
+* PostgreSQL 18
 * MediatR
 * FluentValidation
 * AutoMapper
@@ -20,7 +20,8 @@ This is a long-term project. Every implementation decision must prioritize maint
 * xUnit + FluentAssertions
 * Swagger/OpenAPI
 
-The frontend will be Angular 20 and is completely separated from the backend.
+The frontend will be Angular 20.
+Backend and Frontend are developed independently and communicate exclusively through versioned REST APIs.
 
 ---
 
@@ -28,7 +29,7 @@ The frontend will be Angular 20 and is completely separated from the backend.
 
 The application MUST be implemented as a **Modular Monolith** using **Domain Driven Design (DDD)** and **Clean Architecture** principles.
 
-Each business module is completely isolated and owns its own domain logic while sharing the same SQL Server database.
+Each business module is completely isolated and owns its own domain logic while sharing the same PostgreSQL 18 database.
 
 The architecture must make future extraction into Microservices possible without major refactoring.
 
@@ -179,18 +180,22 @@ SharedKernel must contain ONLY reusable concepts.
 Examples
 
 * BaseEntity
+* BaseAuditableEntity
 * AggregateRoot
 * IEntity
 * IAggregateRoot
 * DomainEvent
 * Result<T>
+* Error
 * Pagination
 * Money
 * Address
 * Email
 * PhoneNumber
+* DateRange
+* Enumeration
 * Guard Clauses
-* Exceptions
+* Domain Exceptions
 * Base Repository Interfaces
 
 Business logic must NEVER be placed inside SharedKernel.
@@ -199,23 +204,147 @@ Business logic must NEVER be placed inside SharedKernel.
 
 # Database
 
-Use ONE SQL Server database.
+The application uses **PostgreSQL 18** as the primary relational database.
 
-Use ONE DbContext.
+The database follows a **Code First** approach using **Entity Framework Core**.
 
-Each module contributes Entity Framework configurations using IEntityTypeConfiguration<T>.
+The Entity Framework domain model is the **single source of truth**.
 
-Never configure entities inside OnModelCreating directly.
+Database schema changes must always be introduced through Entity Framework Migrations.
 
-Use
+Hand-written SQL scripts may be generated for deployment, documentation or DBA review, but must never become the authoritative source.
 
-```
+---
+
+## Database Architecture
+
+- Use one PostgreSQL 18 database.
+- Use one AppDbContext.
+- Each module contributes Entity Framework configurations using IEntityTypeConfiguration<T>.
+- Never configure entities directly inside OnModelCreating().
+- Register configurations using:
+
+```csharp
 ApplyConfigurationsFromAssembly(...)
 ```
 
-for every module.
+- All Entity Framework migrations must be stored inside ERP.Migrations.
 
-All migrations must be stored inside ERP.Migrations.
+---
+
+## Naming Conventions
+
+### C#
+
+Use PascalCase.
+
+### Database
+
+Use snake_case.
+
+Configure naming conventions globally through EF Core.
+
+---
+
+## Primary Keys
+
+- Use BIGINT (long) for all primary keys.
+- Use GENERATED ALWAYS AS IDENTITY.
+- Never use natural keys as primary keys.
+
+---
+
+## Foreign Keys
+
+- Every relationship must have proper foreign key constraints.
+- Every foreign key must be indexed.
+
+---
+
+## Lookup Tables
+
+Simple reference data should use dedicated lookup tables.
+
+Examples
+
+- customer_segment
+- payment_terms
+- warehouse
+- currency
+- tax_code
+
+Do not implement a generic metadata/options table.
+
+---
+
+## Inventory
+
+Inventory follows a ledger architecture.
+
+InventoryTransaction
+
+InventoryTransactionLine
+
+are the source of truth.
+
+InventoryStock stores only the current stock summary.
+
+All inventory-affecting business documents create Inventory Transactions when posted.
+
+---
+
+## Audit
+
+Every business table contains
+
+created_by
+
+created_date
+
+modified_by
+
+modified_date
+
+deleted_by
+
+deleted_date
+
+is_deleted
+
+row_version
+
+Store all timestamps in UTC.
+
+Soft Delete is mandatory.
+
+Optimistic Concurrency is mandatory.
+
+---
+
+## Performance
+
+Create indexes for:
+
+- Foreign Keys
+- Business Codes
+- Document Numbers
+- Frequently searched columns
+
+Prefer composite indexes where appropriate.
+
+---
+
+## Constraints
+
+Use
+
+- PRIMARY KEY
+- FOREIGN KEY
+- UNIQUE
+- CHECK
+- DEFAULT
+
+Never rely only on application logic for enforcing data integrity.
 
 ---
 
@@ -241,6 +370,12 @@ Use optimistic concurrency with RowVersion.
 
 Never expose EF entities directly to API consumers.
 
+Aggregate Roots are the only entities that repositories may expose.
+
+Child entities must always be modified through their Aggregate Root.
+
+Never expose child entity repositories unless explicitly justified.
+
 ---
 
 # Repository Rules
@@ -254,6 +389,12 @@ Repositories should expose business-oriented methods instead of generic CRUD whe
 Avoid Generic Repository abuse.
 
 Use Unit of Work only when required.
+
+Repositories are responsible only for Aggregate Roots.
+
+Read models may bypass repositories and query the DbContext directly through CQRS Query Handlers.
+
+Avoid creating repositories for every entity.
 
 ---
 
@@ -275,6 +416,18 @@ Queries never modify data.
 
 Handlers should remain small and focused.
 
+Commands should return either:
+
+- Result
+- Result<T>
+- Identifier
+
+Never return entities from Commands.
+
+Queries should always return DTOs.
+
+Never return EF entities from Queries.
+
 ---
 
 # Validation
@@ -287,19 +440,27 @@ Never validate inside Controllers.
 
 Never validate inside Repositories.
 
+Business validation belongs inside the Domain.
+
+Input validation belongs inside FluentValidation.
+
 ---
 
 # Controllers
 
-Controllers must remain thin.
+Controllers are responsible only for
 
-Controller responsibilities:
+- Authentication
+- Model Binding
+- Sending Commands/Queries
+- Returning Responses
 
-* Receive request
-* Call MediatR
-* Return response
+Controllers must never contain:
 
-Controllers must never contain business logic.
+- Business Logic
+- Validation
+- Mapping
+- Data Access
 
 ---
 
@@ -314,6 +475,12 @@ Infrastructure provides technical implementations.
 Presentation exposes APIs.
 
 Never place business logic inside Controllers or Repositories.
+
+Business logic must always be encapsulated inside Aggregate Roots whenever possible.
+
+Application Layer orchestrates workflows.
+
+Domain Layer protects business invariants.
 
 ---
 
@@ -341,13 +508,26 @@ Use configuration providers and environment variables.
 
 Use RESTful APIs.
 
-Always version APIs.
-
+Version every endpoint.
 Example
 
 ```
 /api/v1/customers
 ```
+
+Support pagination.
+
+Support sorting.
+
+Support filtering.
+
+Support searching.
+
+Support cancellation tokens.
+
+Use ProblemDetails for failures.
+
+Use RFC7807.
 
 Use proper HTTP status codes.
 
@@ -419,6 +599,14 @@ Support filtering and sorting.
 
 Use cancellation tokens.
 
+Use Split Queries where appropriate.
+
+Avoid Include() chains.
+
+Prefer projection.
+
+Use compiled queries for heavily used reports when beneficial.
+
 ---
 
 # Entity Framework
@@ -434,6 +622,48 @@ Use transactions only when necessary.
 Optimize indexes.
 
 Never expose DbContext outside Infrastructure.
+
+Disable Lazy Loading.
+
+Prefer Explicit Loading.
+
+Prefer Projection.
+
+Never use AutoInclude.
+
+Always configure entities using Fluent API.
+
+Avoid shadow properties unless required.
+
+---
+
+# Aggregate Design
+
+Every business module should expose one or more Aggregate Roots.
+
+Aggregate Roots enforce business rules and transactional consistency.
+
+Child entities must never be modified independently.
+
+Examples
+
+Customer
+├── CustomerAddress
+├── CustomerContact
+
+Purchase
+├── PurchaseLine
+
+InventoryTransaction
+├── InventoryTransactionLine
+
+Rental
+├── RentalLine
+├── RentalAsset
+
+Repositories should exist only for Aggregate Roots.
+
+Aggregate boundaries should remain small and focused.
 
 ---
 
@@ -535,6 +765,23 @@ Avoid God classes.
 
 ---
 
+# Code Generation Principles
+
+Claude Code must always:
+
+- Search the existing solution before generating new code.
+- Reuse existing abstractions.
+- Reuse existing services.
+- Reuse existing infrastructure.
+- Follow established patterns.
+- Avoid duplicate implementations.
+- Keep every module architecturally consistent.
+- Never introduce new frameworks or patterns unless explicitly instructed.
+
+Generated code must appear as though it was written by a single senior engineering team.
+
+---
+
 # Dependency Rules
 
 Allowed dependencies:
@@ -565,14 +812,22 @@ Persistence
 
 # General Rules
 
-Always write production-ready code.
+Always generate production-ready code.
+
+Prefer explicitness over magic.
 
 Prefer readability over cleverness.
 
+Prefer composition over inheritance.
+
 Avoid unnecessary abstractions.
 
-Do not generate placeholder implementations.
+Never duplicate code.
 
-If information is missing, ask for clarification instead of making assumptions.
+Never introduce architectural inconsistencies.
 
-All generated code must be consistent across every module so the entire ERP follows one architecture and one coding standard.
+If information is missing, ask for clarification.
+
+Maintain consistency across every module.
+
+The ERP should feel like it was designed and implemented by one experienced engineering team over many years.

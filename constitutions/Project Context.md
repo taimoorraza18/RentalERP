@@ -102,7 +102,7 @@ These documents are mandatory and must always be followed.
 * .NET 9
 * ASP.NET Core Web API
 * Entity Framework Core
-* SQL Server
+* PostgreSQL 18
 * MediatR
 * FluentValidation
 * AutoMapper
