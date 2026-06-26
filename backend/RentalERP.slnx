@@ -1,0 +1,42 @@
+<Solution>
+  <Folder Name="/src/API/">
+    <Project Path="src\ERP.API\ERP.API.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src\ERP.SharedKernel\ERP.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src\ERP.Foundation\ERP.Foundation.csproj" />
+    <Project Path="src\ERP.Administration\ERP.Administration.csproj" />
+    <Project Path="src\ERP.Security\ERP.Security.csproj" />
+    <Project Path="src\ERP.Customer\ERP.Customer.csproj" />
+    <Project Path="src\ERP.Vendor\ERP.Vendor.csproj" />
+    <Project Path="src\ERP.Product\ERP.Product.csproj" />
+    <Project Path="src\ERP.Warehouse\ERP.Warehouse.csproj" />
+    <Project Path="src\ERP.Inventory\ERP.Inventory.csproj" />
+    <Project Path="src\ERP.Asset\ERP.Asset.csproj" />
+    <Project Path="src\ERP.Rental\ERP.Rental.csproj" />
+    <Project Path="src\ERP.Service\ERP.Service.csproj" />
+    <Project Path="src\ERP.Purchase\ERP.Purchase.csproj" />
+    <Project Path="src\ERP.Sales\ERP.Sales.csproj" />
+    <Project Path="src\ERP.Accounting\ERP.Accounting.csproj" />
+    <Project Path="src\ERP.Reporting\ERP.Reporting.csproj" />
+    <Project Path="src\ERP.Workflow\ERP.Workflow.csproj" />
+    <Project Path="src\ERP.Notification\ERP.Notification.csproj" />
+    <Project Path="src\ERP.Dashboard\ERP.Dashboard.csproj" />
+    <Project Path="src\ERP.Audit\ERP.Audit.csproj" />
+    <Project Path="src\ERP.Integration\ERP.Integration.csproj" />
+    <Project Path="src\ERP.Scheduler\ERP.Scheduler.csproj" />
+    <Project Path="src\ERP.SystemConfiguration\ERP.SystemConfiguration.csproj" />
+    <Project Path="src\ERP.Platform\ERP.Platform.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src\ERP.Infrastructure\ERP.Infrastructure.csproj" />
+    <Project Path="src\ERP.Persistence\ERP.Persistence.csproj" />
+    <Project Path="src\ERP.Migrations\ERP.Migrations.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\ERP.UnitTests\ERP.UnitTests.csproj" />
+    <Project Path="tests\ERP.IntegrationTests\ERP.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

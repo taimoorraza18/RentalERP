@@ -1,0 +1,66 @@
+## .NET / MSBuild
+obj/
+bin/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Nn]uget.Config
+**/packages/
+!**/packages/build/
+
+## dotnet tool manifest
+.config/
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+[Rr]el/
+[Oo]ut/
+[Bb]uild/
+bld/
+[Aa]rtefacts/
+artifacts/
+TestResults/
+
+## Entity Framework Migrations (keep migration files, exclude snapshots from dirty build)
+# Uncomment if you do not want to commit migration bundles:
+# *.bundle
+
+## User secrets
+**/secrets.json
+**/appsettings.Development.json
+
+## Environment files
+.env
+.env.*
+!.env.example
+
+## Logs
+*.log
+logs/
+Serilog/
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Certificates / Keys
+*.pfx
+*.key
+*.pem
+
+## Hangfire
+hangfire.db

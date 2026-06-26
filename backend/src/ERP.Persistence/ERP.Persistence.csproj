@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ERP.Persistence</AssemblyName>
+    <RootNamespace>ERP.Persistence</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ERP.SharedKernel/ERP.SharedKernel.csproj" />
+    <ProjectReference Include="../ERP.Infrastructure/ERP.Infrastructure.csproj" />
+    <ProjectReference Include="../ERP.Foundation/ERP.Foundation.csproj" />
+    <ProjectReference Include="../ERP.Administration/ERP.Administration.csproj" />
+    <ProjectReference Include="../ERP.Security/ERP.Security.csproj" />
+    <ProjectReference Include="../ERP.Customer/ERP.Customer.csproj" />
+    <ProjectReference Include="../ERP.Vendor/ERP.Vendor.csproj" />
+    <ProjectReference Include="../ERP.Product/ERP.Product.csproj" />
+    <ProjectReference Include="../ERP.Warehouse/ERP.Warehouse.csproj" />
+    <ProjectReference Include="../ERP.Inventory/ERP.Inventory.csproj" />
+    <ProjectReference Include="../ERP.Asset/ERP.Asset.csproj" />
+    <ProjectReference Include="../ERP.Rental/ERP.Rental.csproj" />
+    <ProjectReference Include="../ERP.Service/ERP.Service.csproj" />
+    <ProjectReference Include="../ERP.Purchase/ERP.Purchase.csproj" />
+    <ProjectReference Include="../ERP.Sales/ERP.Sales.csproj" />
+    <ProjectReference Include="../ERP.Accounting/ERP.Accounting.csproj" />
+    <ProjectReference Include="../ERP.Reporting/ERP.Reporting.csproj" />
+    <ProjectReference Include="../ERP.Workflow/ERP.Workflow.csproj" />
+    <ProjectReference Include="../ERP.Notification/ERP.Notification.csproj" />
+    <ProjectReference Include="../ERP.Dashboard/ERP.Dashboard.csproj" />
+    <ProjectReference Include="../ERP.Audit/ERP.Audit.csproj" />
+    <ProjectReference Include="../ERP.Integration/ERP.Integration.csproj" />
+    <ProjectReference Include="../ERP.Scheduler/ERP.Scheduler.csproj" />
+    <ProjectReference Include="../ERP.SystemConfiguration/ERP.SystemConfiguration.csproj" />
+    <ProjectReference Include="../ERP.Platform/ERP.Platform.csproj" />
+  </ItemGroup>
+
+</Project>

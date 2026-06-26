@@ -1,0 +1,1769 @@
+# RentalERP v1.0
+
+# AuditDomain.docx
+
+---
+
+# Document Information
+
+**Project:** RentalERP v1.0
+
+**Domain:** Audit
+
+**Architecture:** Domain Driven Design (DDD)
+
+**Database:** Microsoft SQL Server
+
+**Application:** .NET Core Web API + Angular
+
+**Status:** In Progress
+
+**Version:** 1.0
+
+---
+
+# Revision History
+
+| Version | Date | Description | Author |
+|----------|------|-------------|--------|
+| 1.0 | June 2026 | Initial Audit Domain Documentation | ChatGPT |
+
+---
+
+# Table of Contents
+
+1. Domain Overview
+
+2. Business Objectives
+
+3. Aggregate Root
+
+4. Implementation Order
+
+5. AuditLog
+
+6. AuditField
+
+7. EntityHistory
+
+---
+
+# Domain Overview
+
+The Audit Domain provides enterprise-wide auditing, compliance tracking and historical change management for RentalERP.
+
+Every business domain publishes audit events whenever data changes occur. The Audit Domain captures these events and stores immutable audit records for compliance, troubleshooting and historical analysis.
+
+Unlike Activity or Timeline, which describe business events, the Audit Domain records **what changed, who changed it, when it changed and the previous values**.
+
+---
+
+# Business Objectives
+
+The Audit Domain provides:
+
+- Entity Change Tracking
+- Field-Level Change History
+- Insert / Update / Delete Auditing
+- Login Audit
+- Security Audit
+- API Audit
+- Data Restore History
+- Compliance Reporting
+- User Activity History
+- IP Address Tracking
+- Browser Information
+- Immutable Audit Logs
+- Complete Historical Record
+
+---
+
+# Aggregate Root
+
+## Primary Aggregate Root
+
+- AuditLog
+
+## Supporting Entities
+
+- AuditField
+- EntityHistory
+- LoginAudit
+- SecurityAudit
+- RestoreHistory
+- ApiAudit
+
+## Bridge Entities
+
+- AuditAttachment
+- AuditNote
+- AuditActivity
+- AuditTimeline
+
+---
+
+# Implementation Order
+
+001 AuditLog
+
+002 AuditField
+
+003 EntityHistory
+
+004 LoginAudit
+
+005 SecurityAudit
+
+006 RestoreHistory
+
+007 ApiAudit
+
+008 AuditAttachment
+
+009 AuditNote
+
+010 AuditActivity
+
+011 AuditTimeline
+
+---
+
+# ====================================================
+# 001 AuditLog
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditLog
+
+**Classification:** Transaction Header
+
+**Aggregate Root:** Yes
+
+---
+
+# Purpose
+
+AuditLog records every business operation performed throughout RentalERP.
+
+Every insert, update, delete, restore and important business operation generates an Audit Log entry.
+
+Examples include:
+
+- Customer Updated
+- Purchase Order Approved
+- Journal Posted
+- Inventory Adjusted
+- User Deleted
+- Rental Contract Closed
+
+Each AuditLog becomes the parent record for detailed field-level changes.
+
+---
+
+# Dependencies
+
+Depends On
+
+- User
+
+Referenced By
+
+- AuditField
+- EntityHistory
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditLogId | BIGINT GENERATED ALWAYS AS IDENTITY | No | Identity | ✔ | | Primary Key |
+| CompanyId | BIGINT | Yes | NULL | | ✔ | Company Context |
+| BranchId | BIGINT | Yes | NULL | | ✔ | Branch Context |
+| ModuleName | VARCHAR(100) | No | | | | Module Name (Customer, Purchase, Inventory, Rental, etc.) |
+| EntityName | VARCHAR(150) | No | | | | Entity Name (Customer, PurchaseOrder, InventoryTransaction, etc.) |
+| EntityId | BIGINT | Yes | NULL | | | Primary Record Id |
+| ActionType | SMALLINT | No | | | | Create, Update, Delete, Restore, Login, Logout, Post, Cancel, Approve, Reject, etc. |
+| Description | VARCHAR(500) | Yes | NULL | | | Human-readable summary of the action |
+| OldValues | JSONB | Yes | NULL | | | Previous values before change |
+| NewValues | JSONB | Yes | NULL | | | New values after change |
+| IPAddress | VARCHAR(50) | Yes | NULL | | | Client IP Address |
+| UserAgent | VARCHAR(1000) | Yes | NULL | | | Browser / Device Information |
+| PerformedBy | BIGINT | Yes | NULL | | ✔ | Employee/User who performed the action |
+| PerformedOn | TIMESTAMPTZ | No | CURRENT_TIMESTAMP | | | UTC Timestamp |
+| TransactionId | UUID | No | gen_random_uuid() | | | Database Transaction Identifier |
+| CorrelationId | UUID | Yes | NULL | | | Request Correlation Identifier |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditLog
+
+## Foreign Keys
+
+- PerformedBy → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditLog
+
+## Non Clustered
+
+IX_Entity
+
+IX_ActionType
+
+IX_Module
+
+IX_PerformedDate
+
+IX_TransactionId
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditField (Many)
+
+AuditLog (1) → EntityHistory (Many)
+
+---
+
+# Business Rules
+
+- Audit records are immutable.
+- Audit logs cannot be edited.
+- Audit logs cannot be deleted by application users.
+- One transaction may contain multiple audit records.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditRecorded
+- AuditArchived
+
+---
+
+# Developer Notes
+
+- Root entity for auditing.
+- Written automatically by Domain Events / Interceptors.
+
+---
+
+# ====================================================
+# 002 AuditField
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditField
+
+**Classification:** Transaction Detail
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+AuditField stores field-level changes for each Audit Log.
+
+Each modified property is stored independently.
+
+Example:
+
+Customer Name
+
+Old Value:
+ABC Traders
+
+New Value:
+ABC Traders Pvt Ltd
+
+Another example:
+
+Credit Limit
+
+Old:
+50,000
+
+New:
+75,000
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+
+Referenced By
+
+- Audit Viewer
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditFieldId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| FieldName | NVARCHAR(200) | No | | | | Property Name |
+| DisplayName | NVARCHAR(200) | Yes | NULL | | | UI Caption |
+| OldValue | NVARCHAR(MAX) | Yes | NULL | | | Previous Value |
+| NewValue | NVARCHAR(MAX) | Yes | NULL | | | New Value |
+| DataType | NVARCHAR(50) | Yes | NULL | | | String / Decimal |
+| ChangeType | SMALLINT | No | | | | Added / Modified / Deleted |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditField
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditField
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_FieldName
+
+IX_ChangeType
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditField (Many)
+
+---
+
+# Business Rules
+
+- One row per changed field.
+- Old/New values stored as text.
+- Supports all SQL data types.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditFieldRecorded
+
+---
+
+# Developer Notes
+
+- Enables field-level comparison.
+- Optimized for audit viewer.
+
+---
+
+# ====================================================
+# 003 EntityHistory
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** EntityHistory
+
+**Classification:** Transaction Table
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+EntityHistory provides a summarized chronological history for every entity stored within RentalERP.
+
+Unlike AuditField, which stores individual field changes, EntityHistory provides an easy-to-read timeline of business operations performed on an entity.
+
+Examples include:
+
+- Created
+- Updated
+- Approved
+- Posted
+- Closed
+- Cancelled
+- Restored
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+
+Referenced By
+
+- Entity Detail Screens
+- History Viewer
+
+...
+
+# ====================================================
+# 003 EntityHistory
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** EntityHistory
+
+**Classification:** Transaction Table
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+EntityHistory provides a summarized chronological history for every business entity stored within RentalERP.
+
+Unlike AuditField, which stores individual field modifications, EntityHistory stores business milestones that are easily displayed on entity detail pages.
+
+Examples include:
+
+- Created
+- Updated
+- Submitted
+- Approved
+- Rejected
+- Posted
+- Cancelled
+- Closed
+- Restored
+
+This table powers the **History** tab throughout the ERP.
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+
+Referenced By
+
+- Customer Detail
+- Vendor Detail
+- Purchase Order
+- Sales Invoice
+- Rental Contract
+- Asset Detail
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| EntityHistoryId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| EntityName | NVARCHAR(150) | No | | | | Entity Name |
+| EntityId | BIGINT | No | | | | Record Id |
+| EventName | NVARCHAR(200) | No | | | | Created / Updated |
+| EventDescription | NVARCHAR(1000) | Yes | NULL | | | Description |
+| EventDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Event Date |
+| UserId | BIGINT | No | | | ✔ | User |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_EntityHistory
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- UserId → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_EntityHistory
+
+## Non Clustered
+
+IX_Entity
+
+IX_EventDate
+
+IX_User
+
+---
+
+# Relationships
+
+AuditLog (1) → EntityHistory (Many)
+
+---
+
+# Business Rules
+
+- Entity history is append-only.
+- Event descriptions cannot be modified.
+- History remains even if entity is deleted.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- EntityHistoryRecorded
+
+---
+
+# Developer Notes
+
+- Used by History tabs.
+- Optimized for chronological display.
+
+---
+
+# ====================================================
+# 004 LoginAudit
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** LoginAudit
+
+**Classification:** Security Audit
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+LoginAudit records every authentication attempt made within RentalERP.
+
+Both successful and failed login attempts are retained for security monitoring and compliance.
+
+Examples include:
+
+- Successful Login
+- Failed Login
+- Account Locked
+- Password Reset
+- MFA Verified
+- Session Expired
+
+---
+
+# Dependencies
+
+Depends On
+
+- User
+
+Referenced By
+
+- Security Dashboard
+- Compliance Reports
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| LoginAuditId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| UserId | BIGINT | Yes | NULL | | ✔ | User |
+| LoginDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Login Time |
+| LoginStatus | SMALLINT | No | | | | Success / Failed |
+| IPAddress | NVARCHAR(50) | Yes | NULL | | | Client IP |
+| Browser | NVARCHAR(300) | Yes | NULL | | | Browser |
+| Device | NVARCHAR(200) | Yes | NULL | | | Device |
+| OperatingSystem | NVARCHAR(200) | Yes | NULL | | | OS |
+| SessionId | UNIQUEIDENTIFIER | Yes | NULL | | | Session |
+| FailureReason | NVARCHAR(500) | Yes | NULL | | | Failed Login Reason |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_LoginAudit
+
+## Foreign Keys
+
+- UserId → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_LoginAudit
+
+## Non Clustered
+
+IX_User
+
+IX_LoginDate
+
+IX_LoginStatus
+
+IX_IPAddress
+
+---
+
+# Relationships
+
+User (1) → LoginAudit (Many)
+
+---
+
+# Business Rules
+
+- Every login attempt recorded.
+- Failed logins retained indefinitely.
+- IP address captured when available.
+- Session IDs unique.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- UserLoggedIn
+- UserLoginFailed
+- UserLoggedOut
+
+---
+
+# Developer Notes
+
+- Supports intrusion detection.
+- Used by security reports.
+
+---
+
+# ====================================================
+# 005 SecurityAudit
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** SecurityAudit
+
+**Classification:** Security Audit
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+SecurityAudit records sensitive security-related operations throughout RentalERP.
+
+Examples include:
+
+- Permission Granted
+- Role Changed
+- Password Changed
+- MFA Enabled
+- User Locked
+- API Key Generated
+- Session Revoked
+- Security Policy Updated
+
+---
+
+# Dependencies
+
+Depends On
+
+- User
+
+Referenced By
+
+- Compliance Reports
+- Security Dashboard
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| SecurityAuditId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| UserId | BIGINT | Yes | NULL | | ✔ | User |
+| EventName | NVARCHAR(200) | No | | | | Security Event |
+| EventDescription | NVARCHAR(1000) | Yes | NULL | | | Details |
+| IPAddress | NVARCHAR(50) | Yes | NULL | | | Client IP |
+| EventDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Event Date |
+| RiskLevel | SMALLINT | No | | | | Low / Medium / High |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_SecurityAudit
+
+## Foreign Keys
+
+- UserId → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_SecurityAudit
+
+## Non Clustered
+
+IX_User
+
+IX_EventDate
+
+IX_RiskLevel
+
+IX_IPAddress
+
+---
+
+# Relationships
+
+User (1) → SecurityAudit (Many)
+
+---
+
+# Business Rules
+
+- Security events are immutable.
+- High-risk events generate alerts.
+- Security audit retained for compliance.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- SecurityEventRecorded
+- HighRiskSecurityEventDetected
+
+---
+
+# Developer Notes
+
+- Supports compliance standards.
+- Integrates with Security Domain.
+
+...
+
+# ====================================================
+# 006 RestoreHistory
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** RestoreHistory
+
+**Classification:** Transaction Table
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+RestoreHistory records every restoration operation performed within RentalERP.
+
+Whenever deleted records, archived records or previous versions are restored, the operation is permanently recorded for compliance and traceability.
+
+Examples include:
+
+- Customer Restored
+- Vendor Restored
+- Purchase Order Restored
+- Sales Invoice Restored
+- Journal Entry Restored
+- Asset Restored
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+- User
+
+Referenced By
+
+- Compliance Reports
+- Entity History
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| RestoreHistoryId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| EntityName | NVARCHAR(150) | No | | | | Entity |
+| EntityId | BIGINT | No | | | | Record Id |
+| RestoredBy | BIGINT | No | | | ✔ | User |
+| RestoreDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Restore Date |
+| RestoreReason | NVARCHAR(1000) | Yes | NULL | | | Reason |
+| PreviousDeletedDate | DATETIME2(7) | Yes | NULL | | | Original Delete Date |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_RestoreHistory
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- RestoredBy → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_RestoreHistory
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_Entity
+
+IX_RestoreDate
+
+---
+
+# Relationships
+
+AuditLog (1) → RestoreHistory (Many)
+
+---
+
+# Business Rules
+
+- Every restore operation recorded.
+- Restore history immutable.
+- Restore reason recommended.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- EntityRestored
+- RestoreHistoryRecorded
+
+---
+
+# Developer Notes
+
+- Required for compliance.
+- Enables restore auditing.
+
+---
+
+# ====================================================
+# 007 ApiAudit
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** ApiAudit
+
+**Classification:** Transaction Table
+
+**Aggregate Root:** AuditLog
+
+---
+
+# Purpose
+
+ApiAudit records incoming API requests and responses.
+
+It enables troubleshooting, performance monitoring and integration auditing.
+
+Examples include:
+
+- Login API
+- Customer API
+- Purchase API
+- Inventory API
+- Webhook Calls
+- External Integrations
+
+---
+
+# Dependencies
+
+Depends On
+
+- User
+
+Referenced By
+
+- Integration Dashboard
+- Performance Reports
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| ApiAuditId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| UserId | BIGINT | Yes | NULL | | ✔ | User |
+| RequestMethod | NVARCHAR(20) | No | | | | GET / POST |
+| RequestUrl | NVARCHAR(1000) | No | | | | Endpoint |
+| RequestBody | NVARCHAR(MAX) | Yes | NULL | | | Request Payload |
+| ResponseCode | INT | No | | | | HTTP Status |
+| ResponseBody | NVARCHAR(MAX) | Yes | NULL | | | Response |
+| ExecutionTimeMs | INT | No | 0 | | | Duration |
+| ClientIPAddress | NVARCHAR(50) | Yes | NULL | | | IP Address |
+| CorrelationId | UNIQUEIDENTIFIER | Yes | NULL | | | Request Trace |
+| RequestDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Request Date |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_ApiAudit
+
+## Foreign Keys
+
+- UserId → User
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_ApiAudit
+
+## Non Clustered
+
+IX_RequestDate
+
+IX_ResponseCode
+
+IX_User
+
+IX_CorrelationId
+
+---
+
+# Relationships
+
+User (1) → ApiAudit (Many)
+
+---
+
+# Business Rules
+
+- Every API request logged.
+- Large payloads configurable.
+- CorrelationId groups distributed requests.
+- Response body may be masked.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- ApiRequestRecorded
+- SlowApiDetected
+
+---
+
+# Developer Notes
+
+- Supports API diagnostics.
+- Used by monitoring dashboards.
+
+---
+
+# ====================================================
+# 008 AuditAttachment
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditAttachment
+
+**Classification:** Bridge Table
+
+**Aggregate Root:** No
+
+---
+
+# Purpose
+
+Associates Audit Logs with reusable Attachment records maintained within the Shared Kernel.
+
+Examples include:
+
+- Evidence Files
+- Compliance Documents
+- Investigation Reports
+- Supporting Screenshots
+- Exported Logs
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+- Attachment
+
+Referenced By
+
+- Audit Viewer
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditAttachmentId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| AttachmentId | BIGINT | No | | | ✔ | Shared Attachment |
+| DisplayOrder | INT | No | 1 | | | Display Order |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditAttachment
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- AttachmentId → Attachment
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditAttachment
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_Attachment
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditAttachment (Many)
+
+Attachment (1) → AuditAttachment (Many)
+
+---
+
+# Business Rules
+
+- Unlimited attachments supported.
+- Shared Attachment reused across ERP.
+- Soft Delete only.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditAttachmentAdded
+- AuditAttachmentRemoved
+
+---
+
+# Developer Notes
+
+- Implements Shared Kernel Bridge Pattern.
+- Stores investigation evidence.
+
+...
+
+# ====================================================
+# 009 AuditNote
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditNote
+
+**Classification:** Bridge Table
+
+**Aggregate Root:** No
+
+---
+
+# Purpose
+
+AuditNote associates Audit Logs with reusable Note records maintained within the Shared Kernel.
+
+Audit Notes provide investigators, administrators and auditors with a mechanism to document observations without modifying immutable audit records.
+
+Examples include:
+
+- Investigation Notes
+- Compliance Comments
+- Auditor Remarks
+- Root Cause Analysis
+- Incident Summary
+- Corrective Actions
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+- Note
+
+Referenced By
+
+- Audit Viewer
+- Compliance Reports
+- Investigation Center
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditNoteId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| NoteId | BIGINT | No | | | ✔ | Shared Note |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditNote
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- NoteId → Note
+
+## Unique Keys
+
+- UQ_Audit_Note (AuditLogId, NoteId)
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditNote
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_Note
+
+IX_Status
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditNote (Many)
+
+Note (1) → AuditNote (Many)
+
+---
+
+# Business Rules
+
+- Unlimited notes supported.
+- Notes remain reusable in Shared Kernel.
+- Audit records remain immutable.
+- Soft Delete only.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditNoteAdded
+- AuditNoteUpdated
+- AuditNoteRemoved
+
+---
+
+# Developer Notes
+
+- Implements Shared Kernel Bridge Pattern.
+- Supports compliance investigations.
+
+---
+
+# ====================================================
+# 010 AuditActivity
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditActivity
+
+**Classification:** Bridge Table
+
+**Aggregate Root:** No
+
+---
+
+# Purpose
+
+AuditActivity associates Audit Logs with reusable Activity records maintained within the Shared Kernel.
+
+Activities capture operational events occurring throughout the audit lifecycle.
+
+Examples include:
+
+- Audit Recorded
+- Investigation Started
+- Compliance Review
+- Evidence Attached
+- Audit Closed
+- Archive Completed
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+- Activity
+
+Referenced By
+
+- Audit Dashboard
+- Investigation Center
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditActivityId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| ActivityId | BIGINT | No | | | ✔ | Shared Activity |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditActivity
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- ActivityId → Activity
+
+## Unique Keys
+
+- UQ_Audit_Activity (AuditLogId, ActivityId)
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditActivity
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_Activity
+
+IX_Status
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditActivity (Many)
+
+Activity (1) → AuditActivity (Many)
+
+---
+
+# Business Rules
+
+- Activities are append-only.
+- Investigation history cannot be modified.
+- Shared Activity reused throughout ERP.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditActivityCreated
+- AuditActivityUpdated
+
+---
+
+# Developer Notes
+
+- Supports compliance workflows.
+- Maintains operational audit history.
+
+---
+
+# ====================================================
+# 011 AuditTimeline
+# ====================================================
+
+# Table Classification
+
+**Domain:** Audit Domain
+
+**Table Name:** AuditTimeline
+
+**Classification:** Bridge Table
+
+**Aggregate Root:** No
+
+---
+
+# Purpose
+
+AuditTimeline associates Audit Logs with reusable Timeline records maintained within the Shared Kernel.
+
+Timeline provides a chronological history of every audit-related event.
+
+Examples include:
+
+- Audit Recorded
+- Entity Modified
+- Login Attempt
+- Security Event
+- Restore Performed
+- Investigation Started
+- Audit Archived
+
+---
+
+# Dependencies
+
+Depends On
+
+- AuditLog
+- Timeline
+
+Referenced By
+
+- Audit Detail Screen
+- Timeline Widget
+- Compliance Reports
+
+---
+
+# Complete Database Schema
+
+| Column Name | SQL Data Type | Nullable | Default | PK | FK | Description |
+|--------------|---------------|----------|---------|----|----|-------------|
+| AuditTimelineId | BIGINT IDENTITY(1,1) | No | Identity | ✔ | | Primary Key |
+| AuditLogId | BIGINT | No | | | ✔ | Audit Log |
+| TimelineId | BIGINT | No | | | ✔ | Shared Timeline |
+| StatusId | SMALLINT | No | 1 | | | Active |
+| CreatedBy | BIGINT | No | | | | Audit |
+| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
+| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
+| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| DeletedBy | BIGINT | Yes | NULL | | | Audit |
+| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
+| IsDeleted | BIT | No | 0 | | | Soft Delete |
+| RowVersion | ROWVERSION | No | Auto | | | Optimistic Concurrency |
+
+---
+
+# Constraints
+
+## Primary Key
+
+PK_AuditTimeline
+
+## Foreign Keys
+
+- AuditLogId → AuditLog
+- TimelineId → Timeline
+
+## Unique Keys
+
+- UQ_Audit_Timeline (AuditLogId, TimelineId)
+
+---
+
+# Indexes
+
+## Clustered
+
+PK_AuditTimeline
+
+## Non Clustered
+
+IX_AuditLog
+
+IX_Timeline
+
+IX_Status
+
+---
+
+# Relationships
+
+AuditLog (1) → AuditTimeline (Many)
+
+Timeline (1) → AuditTimeline (Many)
+
+---
+
+# Business Rules
+
+- Timeline entries are immutable.
+- Timeline is append-only.
+- Business ownership belongs to Audit Domain.
+- Shared Timeline reused throughout ERP.
+- Soft Delete only.
+- Audit fields mandatory.
+- RowVersion mandatory.
+
+---
+
+# Published Domain Events
+
+- AuditTimelineCreated
+- AuditTimelineUpdated
+
+---
+
+# Developer Notes
+
+- Implements Shared Kernel Bridge Pattern.
+- Optimized for compliance investigations.
+
+---
+
+# ====================================================
+# Domain Summary
+# ====================================================
+
+## Domain Overview
+
+The Audit Domain provides centralized, immutable auditing for every aggregate within RentalERP.
+
+It records entity changes, field-level modifications, login activity, security events, API requests, restore operations and compliance history.
+
+Unlike Activity and Timeline, which describe business events, the Audit Domain captures **what changed, who changed it, when it changed and the before/after values**.
+
+---
+
+## Aggregate Roots
+
+- AuditLog
+
+---
+
+## Supporting Entities
+
+- AuditField
+- EntityHistory
+- LoginAudit
+- SecurityAudit
+- RestoreHistory
+- ApiAudit
+
+---
+
+## Bridge Entities
+
+- AuditAttachment
+- AuditNote
+- AuditActivity
+- AuditTimeline
+
+---
+
+## Major Business Capabilities
+
+- Entity Change Tracking
+- Field-Level Auditing
+- Login Auditing
+- Security Auditing
+- API Auditing
+- Restore History
+- Compliance Reporting
+- Investigation Support
+- Immutable Audit Records
+- Historical Entity Tracking
+- Shared Kernel Integration
+
+---
+
+## Published Domain Events
+
+The Audit Domain publishes events including:
+
+- AuditRecorded
+- AuditFieldRecorded
+- EntityHistoryRecorded
+- UserLoggedIn
+- UserLoginFailed
+- SecurityEventRecorded
+- EntityRestored
+- ApiRequestRecorded
+- HighRiskSecurityEventDetected
+
+These events integrate with:
+
+- Administration Domain
+- Customer Domain
+- Vendor Domain
+- Product Domain
+- Purchase Domain
+- Sales Domain
+- Inventory Domain
+- Warehouse Domain
+- Rental Domain
+- Service Domain
+- Accounting Domain
+- Workflow Domain
+- Notification Domain
+- Dashboard Domain
+- Reporting Domain
+
+---
+
+## Integration Points
+
+The Audit Domain integrates directly with:
+
+- Foundation
+- Shared Kernel
+- Administration Domain
+- Customer Domain
+- Vendor Domain
+- Product Domain
+- Purchase Domain
+- Sales Domain
+- Inventory Domain
+- Warehouse Domain
+- Rental Domain
+- Service Domain
+- Accounting Domain
+- Workflow Domain
+- Notification Domain
+- Dashboard Domain
+- Reporting Domain
+
+---
+
+# Audit Domain Status
+
+**Status:** ✅ Complete
+
+**Total Tables:** 11
+
+1. AuditLog
+2. AuditField
+3. EntityHistory
+4. LoginAudit
+5. SecurityAudit
+6. RestoreHistory
+7. ApiAudit
+8. AuditAttachment
+9. AuditNote
+10. AuditActivity
+11. AuditTimeline
+
+---

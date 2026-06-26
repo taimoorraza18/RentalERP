@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ERP.Infrastructure</AssemblyName>
+    <RootNamespace>ERP.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.15" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ERP.SharedKernel/ERP.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>
