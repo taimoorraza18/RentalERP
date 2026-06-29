@@ -26,3 +26,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# ==========================
+# .NET / Visual Studio
+# ==========================
+.vs/
+
+# ==========================
+# VS Code
+# ==========================
+
+# Ignore local VS Code settings
+frontend/web/.vscode/

@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+// Design tokens — must be first so all partials can reference CSS custom properties
+@use 'styles/tokens';
+
+// Minimal resets on top of Tailwind base
+@use 'styles/reset';
+
+// Global typography rules
+@use 'styles/typography';
+
+// Keyframes and animation helper classes
+@use 'styles/animations';
+
+// Reusable SCSS mixins (no CSS output — available to component stylesheets)
+@use 'styles/mixins';
+
+// PrimeNG global overrides (populated in Phase F4)
+@use 'styles/primeng';
+
+// Global utility classes not covered by Tailwind
+@use 'styles/utilities';
+
+// Tailwind CSS directives
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
