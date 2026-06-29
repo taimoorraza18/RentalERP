@@ -22,8 +22,6 @@ public sealed class Company : AuditableEntity
     public byte[] RowVersion { get; private set; } = [];
 
     public Currency? Currency { get; private set; }
-    public FiscalYear? CurrentFiscalYear { get; private set; }
     public ICollection<Branch> Branches { get; private set; } = [];
-    public ICollection<FiscalYear> FiscalYears { get; private set; } = [];
     public ICollection<NumberSeries> NumberSeries { get; private set; } = [];
 }

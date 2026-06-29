@@ -14,6 +14,11 @@
 
   <ItemGroup>
     <ProjectReference Include="../ERP.SharedKernel/ERP.SharedKernel.csproj" />
+    <ProjectReference Include="../ERP.Foundation/ERP.Foundation.csproj" />
+    <ProjectReference Include="../ERP.Warehouse/ERP.Warehouse.csproj" />
+    <ProjectReference Include="../ERP.Product/ERP.Product.csproj" />
+    <ProjectReference Include="../ERP.Customer/ERP.Customer.csproj" />
+    <ProjectReference Include="../ERP.Accounting/ERP.Accounting.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,7 @@ The backend is a Modular Monolith using Domain Driven Design (DDD). The frontend
 * Angular 20
 * Standalone Components
 * Angular Signals
-* Angular Material 3
+* PrimeNG
 * RxJS
 * TypeScript (Strict Mode)
 * SCSS

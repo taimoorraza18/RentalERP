@@ -1,25 +1,25 @@
 Phase 1 — Foundation (Backend)
 
-Solution Structure — folders, projects, references, NuGet packages
-Shared Kernel — base entities, value objects, domain events, common interfaces, result pattern
-Database Model — all EF Core entities and relationships upfront (critical — see why below)
-EF Core Configuration — entity configs, DbContext, migrations baseline
-Infrastructure Skeleton — repositories, UoW, common behaviors (pipeline, validation, logging)
+    Solution Structure — folders, projects, references, NuGet packages -done
+    Shared Kernel — base entities, value objects, domain events, common interfaces, result pattern -done
+    Database Model — all EF Core entities and relationships upfront (critical — see why below) -group1 done
+    EF Core Configuration — entity configs, DbContext, migrations baseline
+    Infrastructure Skeleton — repositories, UoW, common behaviors (pipeline, validation, logging)
 
 Phase 2 — Cross-Cutting (Backend)
 
-Administration module — company, settings, currencies, etc.
-Security module — users, roles, permissions, JWT auth, middleware
+    Administration module — company, settings, currencies, etc.
+    Security module — users, roles, permissions, JWT auth, middleware
 
 Phase 3 — Core Business Modules (Backend, one at a time)
 
-Customer → 9. Vendor → 10. Product → 11. Warehouse → 12. Inventory → 13. Purchase → 14. Sales → 15. Rental → 16. Service → 17. Accounting
+    Customer → 9. Vendor → 10. Product → 11. Warehouse → 12. Inventory → 13. Purchase → 14. Sales → 15. Rental → 16. Service → 17. Accounting
 
 Phase 4 — Supporting Modules (Backend)
 
-Workflow, Notifications, Audit, Scheduler, Reporting, Dashboards
+    Workflow, Notifications, Audit, Scheduler, Reporting, Dashboards
 
 Phase 5 — Frontend (starts here, not earlier)
 
-Angular workspace structure, shared infrastructure, auth shell
-One module at a time, mirroring backend order
+    Angular workspace structure, shared infrastructure, auth shell
+    One module at a time, mirroring backend order

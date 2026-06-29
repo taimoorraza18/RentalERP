@@ -22,5 +22,4 @@ public sealed class NumberSeries : AuditableEntity
 
     public Company? Company { get; private set; }
     public Branch? Branch { get; private set; }
-    public FiscalYear? FiscalYear { get; private set; }
 }

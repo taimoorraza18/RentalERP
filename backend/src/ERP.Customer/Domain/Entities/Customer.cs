@@ -1,4 +1,5 @@
 using ERP.SharedKernel.Base;
+using TaxConfiguration = ERP.SystemConfiguration.Domain.Entities.TaxConfiguration;
 
 namespace ERP.Customer.Domain.Entities;
 
@@ -15,12 +16,13 @@ public sealed class Customer : AuditableEntity
     public long CustomerPriceLevelId { get; private set; }
     public long CustomerPaymentProfileId { get; private set; }
     public long CustomerCreditProfileId { get; private set; }
-    public long CustomerTaxProfileId { get; private set; }
+    public long? TaxConfigurationId { get; private set; }
     public DateOnly RegistrationDate { get; private set; }
     public short StatusId { get; private set; }
     public string? Remarks { get; private set; }
     public byte[] RowVersion { get; private set; } = [];
 
+    public TaxConfiguration? TaxConfiguration { get; private set; }
     public CustomerGroup? CustomerGroup { get; private set; }
     public CustomerCategory? CustomerCategory { get; private set; }
     public CustomerIndustry? CustomerIndustry { get; private set; }
@@ -28,7 +30,6 @@ public sealed class Customer : AuditableEntity
     public CustomerPriceLevel? CustomerPriceLevel { get; private set; }
     public CustomerPaymentProfile? CustomerPaymentProfile { get; private set; }
     public CustomerCreditProfile? CustomerCreditProfile { get; private set; }
-    public CustomerTaxProfile? CustomerTaxProfile { get; private set; }
     public ICollection<CustomerAddress> CustomerAddresses { get; private set; } = [];
     public ICollection<CustomerContact> CustomerContacts { get; private set; } = [];
     public ICollection<CustomerAttachment> CustomerAttachments { get; private set; } = [];

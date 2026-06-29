@@ -948,6 +948,42 @@ Never hardcode URLs.
 
 Use environment configuration.
 
+---
+
+# 22. State Management
+
+Prefer Angular Signals.
+
+Use RxJS only when streams provide clear benefits.
+
+Each feature owns its own state.
+
+Avoid global state unless truly shared.
+
+Keep state localized.
+
+---
+
+# 23. Navigation
+
+Support:
+
+Breadcrumbs
+
+Favorites
+
+Recent Pages
+
+Global Search
+
+Module Search
+
+Pinned Menu
+
+Collapsed Menu
+
+Navigation should remain consistent across all modules.
+
 # 24. Permission Framework
 
 The frontend must implement permission-aware UI.
@@ -1398,6 +1434,18 @@ Use meaningful names.
 
 Follow SOLID principles where applicable.
 
+Sanitize HTML.
+
+Prevent XSS.
+
+Prevent CSRF where applicable.
+
+Validate uploaded files.
+
+Escape dynamic content.
+
+Never trust frontend input.
+
 ---
 
 # 34. Naming Conventions
@@ -1559,66 +1607,6 @@ Never create multiple implementations of the same feature.
 Never sacrifice maintainability for short-term convenience.
 
 ---
-
-# Final Principle
-
-RentalERP is an enterprise application intended to evolve for many years.
-
-Every implementation decision must prioritize:
-
-Consistency
-
-Maintainability
-
-Scalability
-
-Performance
-
-Accessibility
-
-Reusability
-
-Developer Experience
-
-User Productivity
-
-When multiple implementation approaches are possible, always choose the one that produces a consistent, maintainable and enterprise-ready application.
-
----
-
-# 22. State Management
-
-Prefer Angular Signals.
-
-Use RxJS only when streams provide clear benefits.
-
-Each feature owns its own state.
-
-Avoid global state unless truly shared.
-
-Keep state localized.
-
----
-
-# 23. Navigation
-
-Support:
-
-Breadcrumbs
-
-Favorites
-
-Recent Pages
-
-Global Search
-
-Module Search
-
-Pinned Menu
-
-Collapsed Menu
-
-Navigation should remain consistent across all modules.
 
 # 38. Feature Module Standard
 
@@ -2060,53 +2048,7 @@ Never replace every loading state with a spinner.
 
 ---
 
-# 50. Keyboard Shortcuts
-
-Enterprise users should be productive without relying entirely on the mouse.
-
-Recommended shortcuts:
-
-Ctrl + N
-
-New Record
-
-Ctrl + S
-
-Save
-
-Ctrl + F
-
-Focus Search
-
-Esc
-
-Close Dialog
-
-Delete
-
-Delete Selected
-
-F5
-
-Refresh Data
-
-Arrow Keys
-
-Table Navigation
-
-Tab
-
-Next Field
-
-Shift + Tab
-
-Previous Field
-
-Future modules may extend shortcuts.
-
----
-
-# 51. File Naming Standards
+# 50. File Naming Standards
 
 Folders
 
@@ -2148,7 +2090,7 @@ Maintain consistent naming throughout the project.
 
 ---
 
-# 52. Layout Standards
+# 51. Layout Standards
 
 Default page spacing
 
@@ -2180,7 +2122,7 @@ Use design tokens whenever possible.
 
 ---
 
-# 53. Animation Standards
+# 52. Animation Standards
 
 Animations should improve usability.
 
@@ -2216,7 +2158,7 @@ Respect reduced motion preferences where possible.
 
 ---
 
-# 54. User Personalization
+# 53. User Personalization
 
 Users should be able to personalize:
 
@@ -2240,7 +2182,7 @@ Preferences should persist between sessions.
 
 ---
 
-# 55. Offline & Network Handling
+# 54. Offline & Network Handling
 
 Detect network failures gracefully.
 
@@ -2254,7 +2196,7 @@ Warn users before leaving unsaved changes.
 
 ---
 
-# 56. Final Development Principles
+# 55. Final Development Principles
 
 Every feature should appear as if it was developed by the same team.
 
