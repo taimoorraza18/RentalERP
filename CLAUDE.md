@@ -66,17 +66,21 @@ any entity, configuration or application code.
 ## Current State
 
 ### Completed
-- Solution structure: ✅ 29 projects, all compiling clean
+- Solution structure: ✅ 30 projects, all compiling clean
 - Shared Kernel: ✅ Locked, do not modify
 - Group 1 entities: ✅ Foundation, Security, Customer, 
   Vendor, Product, Warehouse
-- Group 2 entities: ✅ Inventory, Asset, 
-  Rental, Service, Purchase, Sales, Accounting
-- Group 3 entities: In progress - Report, Workflow, 
-  Notification, Dashboard, Audit, Integration, Scheduler, Configuration, Platform
+- Group 2 entities: ✅ Inventory, Asset, Rental, Service, 
+  Purchase, Sales, Accounting
+- Group 3 entities: ✅ Report, Workflow, Notification, 
+  Dashboard, Audit, Integration, Scheduler, 
+  Configuration, Platform
+- Group 1 EF Configs: ✅ Complete, build clean
 
 ### Next Task
+EF Core Configurations — Group 2
+Read constitutions/Prompts/Group2_EFConfig.md
 
 ### Do Not Touch
 - ERP.SharedKernel — locked and complete
-- Any already generated entity files
+- Any already generated entity or config filess

@@ -32,10 +32,6 @@ The Product Domain is the centralized catalog for inventory items, rental assets
 | 003 | ItemBrand |
 | 004 | ItemManufacturer |
 | 005 | ItemUnit |
-| 006 | ItemTaxProfile |
-| 007 | ItemPriceLevel |
-| 008 | ItemAttribute |
-| 009 | ItemAttributeValue |
 | 010 | Item |
 | 011 | ItemBarcode |
 | 012 | ItemImage |
@@ -53,10 +49,6 @@ The Product Domain is the centralized catalog for inventory items, rental assets
 3. [ItemBrand](#003-itembrand)
 4. [ItemManufacturer](#004-itemmanufacturer)
 5. [ItemUnit](#005-itemunit)
-6. [ItemTaxProfile](#006-itemtaxprofile)
-7. [ItemPriceLevel](#007-itempricelevel)
-8. [ItemAttribute](#008-itemattribute)
-9. [ItemAttributeValue](#009-itemattributevalue)
 10. [Item](#010-item)
 11. [ItemBarcode](#011-itembarcode)
 12. [ItemImage](#012-itemimage)
@@ -442,308 +434,6 @@ Lookup/master table. Filter active, non-deleted records. Complies with global st
 
 ---
 
-## 006 ItemTaxProfile
-
-**Classification:** Master Table
-
-### Purpose
-
-Defines default tax configuration for items.
-
-### Dependencies
-
-- **Depends On:** None
-- **Referenced By:** Item
-
-### Database Schema
-
-| Column | SQL Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| ItemTaxProfileId | BIGINT IDENTITY(1,1) | No | Identity | Yes | | Primary Key |
-| TaxProfileCode | NVARCHAR(20) | No | | | | Unique Code |
-| TaxProfileName | NVARCHAR(150) | No | | | | Name |
-| Description | NVARCHAR(500) | Yes | NULL | | | Description |
-| DisplayOrder | INT | No | 0 | | | Display Order |
-| IsActive | BIT | No | 1 | | | Active Flag |
-| StatusId | SMALLINT | No | 1 | | | Status |
-| CreatedBy | BIGINT | No | | | | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| DeletedBy | BIGINT | Yes | NULL | | | Audit |
-| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | Auto | | | Concurrency |
-
-### Constraints
-
-- `PK_ItemTaxProfile`
-- `UQ_TaxProfileCode`, `UQ_TaxProfileName`
-- `CHECK (DisplayOrder >= 0)`
-- `CHECK (StatusId > 0)`
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_ItemTaxProfile |
-| Non-Clustered | IX_Code |
-| Non-Clustered | IX_Name |
-| Non-Clustered | IX_Status |
-| Non-Clustered | IX_DisplayOrder |
-
-### Relationships
-
-- `ItemTaxProfile (1) -> (N) Item`
-
-### Business Rules
-
-- Code and name must be unique.
-- Inactive records cannot be assigned.
-- Soft delete only.
-- Audit fields and RowVersion mandatory.
-
-### Events Published
-
-- `ItemTaxProfileCreated`
-- `ItemTaxProfileUpdated`
-- `ItemTaxProfileActivated`
-- `ItemTaxProfileDeactivated`
-- `ItemTaxProfileDeleted`
-
-### Developer Notes
-
-Lookup/master table. Filter active, non-deleted records. Complies with global standards.
-
----
-
-## 007 ItemPriceLevel
-
-**Classification:** Master Table
-
-### Purpose
-
-Defines pricing levels and default pricing strategies.
-
-### Dependencies
-
-- **Depends On:** None
-- **Referenced By:** Item
-
-### Database Schema
-
-| Column | SQL Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| ItemPriceLevelId | BIGINT IDENTITY(1,1) | No | Identity | Yes | | Primary Key |
-| PriceLevelCode | NVARCHAR(20) | No | | | | Unique Code |
-| PriceLevelName | NVARCHAR(150) | No | | | | Name |
-| PriceCalculationMethod | NVARCHAR(20) | No | Fixed | | | Calculation Method |
-| Description | NVARCHAR(500) | Yes | NULL | | | Description |
-| DisplayOrder | INT | No | 0 | | | Display Order |
-| IsActive | BIT | No | 1 | | | Active Flag |
-| StatusId | SMALLINT | No | 1 | | | Status |
-| CreatedBy | BIGINT | No | | | | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| DeletedBy | BIGINT | Yes | NULL | | | Audit |
-| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | Auto | | | Concurrency |
-
-### Constraints
-
-- `PK_ItemPriceLevel`
-- `UQ_PriceLevelCode`, `UQ_PriceLevelName`
-- `CHECK (DisplayOrder >= 0)`
-- `CHECK (StatusId > 0)`
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_ItemPriceLevel |
-| Non-Clustered | IX_Code |
-| Non-Clustered | IX_Name |
-| Non-Clustered | IX_Status |
-| Non-Clustered | IX_DisplayOrder |
-
-### Relationships
-
-- `ItemPriceLevel (1) -> (N) Item`
-
-### Business Rules
-
-- Unique codes and names.
-- Soft delete only.
-- Audit fields and RowVersion mandatory.
-
-### Events Published
-
-- `ItemPriceLevelCreated`
-- `ItemPriceLevelUpdated`
-- `ItemPriceLevelActivated`
-- `ItemPriceLevelDeactivated`
-- `ItemPriceLevelDeleted`
-
-### Developer Notes
-
-Lookup/master table. Complies with RentalERP standards.
-
----
-
-## 008 ItemAttribute
-
-**Classification:** Master Table
-
-### Purpose
-
-Defines configurable attributes such as Color, Size, Capacity and Power.
-
-### Dependencies
-
-- **Depends On:** None
-- **Referenced By:** ItemAttributeValue
-
-### Database Schema
-
-| Column | SQL Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| ItemAttributeId | BIGINT IDENTITY(1,1) | No | Identity | Yes | | Primary Key |
-| AttributeCode | NVARCHAR(20) | No | | | | Unique Code |
-| AttributeName | NVARCHAR(150) | No | | | | Name |
-| DataType | NVARCHAR(20) | No | Text | | | Attribute Type |
-| Description | NVARCHAR(500) | Yes | NULL | | | Description |
-| DisplayOrder | INT | No | 0 | | | Display Order |
-| IsActive | BIT | No | 1 | | | Active Flag |
-| StatusId | SMALLINT | No | 1 | | | Status |
-| CreatedBy | BIGINT | No | | | | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| DeletedBy | BIGINT | Yes | NULL | | | Audit |
-| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | Auto | | | Concurrency |
-
-### Constraints
-
-- `PK_ItemAttribute`
-- `UQ_AttributeCode`, `UQ_AttributeName`
-- `CHECK (DisplayOrder >= 0)`
-- `CHECK (StatusId > 0)`
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_ItemAttribute |
-| Non-Clustered | IX_Code |
-| Non-Clustered | IX_Name |
-| Non-Clustered | IX_Status |
-| Non-Clustered | IX_DisplayOrder |
-
-### Relationships
-
-- `ItemAttribute (1) -> (N) ItemAttributeValue`
-
-### Business Rules
-
-- Unique codes and names.
-- Soft delete only.
-- Audit fields and RowVersion mandatory.
-
-### Events Published
-
-- `ItemAttributeCreated`
-- `ItemAttributeUpdated`
-- `ItemAttributeActivated`
-- `ItemAttributeDeactivated`
-- `ItemAttributeDeleted`
-
-### Developer Notes
-
-Lookup/master table. Complies with RentalERP standards.
-
----
-
-## 009 ItemAttributeValue
-
-**Classification:** Master Table
-
-### Purpose
-
-Defines selectable values for each item attribute.
-
-### Dependencies
-
-- **Depends On:** ItemAttribute
-- **Referenced By:** Item
-
-### Database Schema
-
-| Column | SQL Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| ItemAttributeValueId | BIGINT IDENTITY(1,1) | No | Identity | Yes | | Primary Key |
-| AttributeValueCode | NVARCHAR(20) | No | | | | Unique Code |
-| AttributeValueName | NVARCHAR(150) | No | | | | Name |
-| ItemAttributeId | BIGINT | No | | | ItemAttribute | Parent Attribute |
-| Description | NVARCHAR(500) | Yes | NULL | | | Description |
-| DisplayOrder | INT | No | 0 | | | Display Order |
-| IsActive | BIT | No | 1 | | | Active Flag |
-| StatusId | SMALLINT | No | 1 | | | Status |
-| CreatedBy | BIGINT | No | | | | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| DeletedBy | BIGINT | Yes | NULL | | | Audit |
-| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | Auto | | | Concurrency |
-
-### Constraints
-
-- `PK_ItemAttributeValue`
-- `FK_ItemAttributeValue_ItemAttribute`
-- `UQ_AttributeValueCode`, `UQ_AttributeValueName`
-- `CHECK (DisplayOrder >= 0)`
-- `CHECK (StatusId > 0)`
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_ItemAttributeValue |
-| Non-Clustered | IX_Code |
-| Non-Clustered | IX_Name |
-| Non-Clustered | IX_Status |
-| Non-Clustered | IX_DisplayOrder |
-
-### Relationships
-
-- `ItemAttribute (1) -> (N) ItemAttributeValue`
-- `ItemAttributeValue (1) -> (N) Item`
-
-### Business Rules
-
-- Unique codes and names.
-- Soft delete only.
-- Audit fields and RowVersion mandatory.
-
-### Events Published
-
-- `ItemAttributeValueCreated`
-- `ItemAttributeValueUpdated`
-- `ItemAttributeValueActivated`
-- `ItemAttributeValueDeactivated`
-- `ItemAttributeValueDeleted`
-
-### Developer Notes
-
-Lookup/master table. Complies with RentalERP standards.
-
----
-
 ## 010 Item
 
 **Classification:** Master (Aggregate Root)
@@ -754,7 +444,7 @@ Aggregate root representing every inventory, rental and service item in the ERP.
 
 ### Dependencies
 
-- **Depends On:** Company, Branch, ItemGroup, ItemCategory, ItemBrand, ItemManufacturer, ItemUnit, ItemTaxProfile
+- **Depends On:** Company, Branch, ItemGroup, ItemCategory, ItemBrand, ItemManufacturer, ItemUnit,
 - **Referenced By:** ItemBarcode, ItemImage, ItemAttachment, ItemNote, ItemActivity, ItemTimeline, Sales, Rental, Service, Inventory
 
 ### Database Schema
@@ -770,8 +460,8 @@ Aggregate root representing every inventory, rental and service item in the ERP.
 | ItemCategoryId | BIGINT | Yes | NULL | | ItemCategory | Category |
 | ItemBrandId | BIGINT | Yes | NULL | | ItemBrand | Brand |
 | ItemManufacturerId | BIGINT | Yes | NULL | | ItemManufacturer | Manufacturer |
-| ItemUnitId | BIGINT | No | | | ItemUnit | Unit |
-| ItemTaxProfileId | BIGINT | Yes | NULL | | ItemTaxProfile | Tax Profile |
+| UnitId | BIGINT | No | | | Unit | Unit |
+| TaxConfigurationId | BIGINT | Yes | NULL | | TaxConfiguration | Tax Configuration |
 | StatusId | SMALLINT | No | 1 | | | Status |
 | CreatedBy | BIGINT | No | | | | Audit |
 | CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
@@ -787,7 +477,7 @@ Aggregate root representing every inventory, rental and service item in the ERP.
 - `PK_Item`
 - `FK_Item_Company`, `FK_Item_Branch`
 - `FK_Item_ItemGroup`, `FK_Item_ItemCategory`, `FK_Item_ItemBrand`
-- `FK_Item_ItemManufacturer`, `FK_Item_ItemUnit`, `FK_Item_ItemTaxProfile`
+- `FK_Item_ItemManufacturer`, `FK_Item_Unit`, `FK_Item_TaxConfiguration`
 - `UQ_Item_ItemCode`
 
 ### Indexes
@@ -1224,7 +914,7 @@ Uses Shared Kernel Timeline. No business ownership stored in Shared Kernel.
 
 ## Domain Summary
 
-Product Domain is complete. All lookup, master and bridge tables have been documented following the RentalERP locked documentation standard. Version 3 adds ItemUnit and ItemTaxProfile while retaining all previously documented Product Domain sections.
+Product Domain is complete. All lookup, master and bridge tables have been documented following the RentalERP locked documentation standard. Version 3 adds ItemUnit while retaining all previously documented Product Domain sections.
 
 ---
 

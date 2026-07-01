@@ -28,6 +28,7 @@
 17. [Activity](#18-activity)
 18. [Timeline](#19-timeline)
 19. [NumberSeries](#20-numberseries)
+20. [City](#20-city)
 
 ---
 
@@ -1712,6 +1713,96 @@ Maintains configurable document numbering sequences for all ERP modules with sup
 All document numbers in the ERP must be generated through this table to ensure uniqueness, consistency and concurrency safety.
 
 ---
+
+## 20 City
+
+### Purpose
+
+Stores all cities supported by the ERP. Used by addresses, companies, branches, warehouses and other location-based entities.
+
+### Database Schema
+
+| Column | Data Type | PK | FK | Null | Default | Description |
+|---|---|---|---|---|---|---|
+| CityId | BIGINT IDENTITY(1,1) | Yes | | No | | Primary Key |
+| CountryId | BIGINT | | Country | No | | Parent Country |
+| StateProvinceId | BIGINT | | StateProvince | Yes | | Parent State/Province |
+| CityCode | NVARCHAR(20) | | | Yes | | Internal City Code |
+| CityName | NVARCHAR(150) | | | No | | Official City Name |
+| IsActive | BIT | | | No | 1 | Status |
+| DisplayOrder | INT | | | No | 0 | Sort Order |
+| CreatedBy | BIGINT | | User | No | | Audit |
+| CreatedDate | DATETIME2 | | | No | GETDATE() | Audit |
+| ModifiedBy | BIGINT | | User | Yes | | Audit |
+| ModifiedDate | DATETIME2 | | | Yes | | Audit |
+| DeletedBy | BIGINT | | User | Yes | | Audit |
+| DeletedDate | DATETIME2 | | | Yes | | Audit |
+| IsDeleted | BIT | | | No | 0 | Soft Delete |
+| RowVersion | ROWVERSION | | | No | | Optimistic Concurrency |
+
+### Constraints
+
+- `PK_City`
+- `FK_City_Country`
+- `FK_City_StateProvince`
+- `UQ_City_Country_StateProvince_CityName`
+
+### Indexes
+
+| Type | Index |
+|---|---|
+| Clustered | PK on CityId |
+| Composite Unique | (CountryId, StateProvinceId, CityName) |
+| Non-Clustered | CityName |
+| Non-Clustered | CountryId |
+| Non-Clustered | StateProvinceId |
+| Composite | (IsActive, DisplayOrder) |
+
+### Relationships
+
+- `Country (1) -> (N) City`
+- `StateProvince (1) -> (N) City`
+- `City (1) -> (N) Address`
+- `City (1) -> (N) Company`
+- `City (1) -> (N) Branch`
+- `City (1) -> (N) Warehouse`
+- `City (1) -> (N) Customer`
+- `City (1) -> (N) Vendor`
+- `City (1) -> (N) Employee` *(future)*
+
+### Business Rules
+
+- Every city must belong to a Country.
+- StateProvince is optional because some countries do not use states or provinces.
+- City names must be unique within the same Country and State/Province.
+- Inactive cities cannot be assigned to new records.
+- Cities should be seeded from authoritative geographic datasets where possible.
+
+### Accounting Impact
+
+No direct journal entries.
+
+City is used for taxation, reporting, logistics, shipping, territory management and regulatory compliance.
+
+### REST APIs
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | /api/cities | List |
+| GET | /api/cities/{id} | Details |
+| POST | /api/cities | Create |
+| PUT | /api/cities/{id} | Update |
+| DELETE | /api/cities/{id} | Deactivate |
+
+### Angular Screens
+
+- City List
+- City Detail
+- Create/Edit City
+
+### SQL Notes
+
+Seed this table with commonly used cities for supported countries. Additional cities may be added by administrators. City names should remain unique within the same Country and State/Province.
 
 
 *RentalERP v1.0 — Foundation Module Documentation | Generated June 2026*

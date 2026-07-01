@@ -16,7 +16,6 @@
 5. [CustomerPriceLevel](#005-customerpricelevel)
 6. [CustomerPaymentProfile](#006-customerpaymentprofile)
 7. [CustomerCreditProfile](#007-customercreditprofile)
-8. [CustomerTaxProfile](#008-customertaxprofile)
 9. [Customer](#009-customer)
 10. [CustomerAddress](#010-customeraddress)
 11. [CustomerContact](#011-customercontact)
@@ -699,103 +698,6 @@ CustomerCreditProfile defines default credit policies only. Actual customer bala
 
 ---
 
-## 008 CustomerTaxProfile
-
-**Classification:** Configuration (Master) Table
-
-### Purpose
-
-Defines default tax configuration applicable to customers for Sales, Rental and Accounting transactions.
-
-### Dependencies
-
-- **Depends On:** Company, User
-- **Referenced By:** Customer, SalesInvoice, RentalInvoice, Tax Module
-
-### Database Schema
-
-| Column | Data Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| CustomerTaxProfileId | BIGINT IDENTITY(1,1) | No | | Yes | | Primary Key |
-| CompanyId | BIGINT | No | | | Company | Owner Company |
-| TaxProfileCode | NVARCHAR(20) | No | | | | Business Code |
-| TaxProfileName | NVARCHAR(150) | No | | | | Profile Name |
-| NTN | NVARCHAR(30) | Yes | | | | National Tax Number |
-| GSTNumber | NVARCHAR(30) | Yes | | | | GST / Sales Tax Number |
-| TaxRegistrationType | NVARCHAR(30) | No | Registered | | | Registered / Unregistered / Exempt |
-| DefaultTaxRate | DECIMAL(9,4) | No | 0 | | | Default Tax % |
-| IsTaxExempt | BIT | No | 0 | | | Tax Exempt |
-| ReverseChargeApplicable | BIT | No | 0 | | | Reverse Charge |
-| Description | NVARCHAR(500) | Yes | | | | Description |
-| IsDefault | BIT | No | 0 | | | Default Profile |
-| StatusId | SMALLINT | No | 1 | | Status | Status |
-| CreatedBy | BIGINT | No | | | User | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | | | User | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | | | | Audit |
-| DeletedBy | BIGINT | Yes | | | User | Audit |
-| DeletedDate | DATETIME2(7) | Yes | | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | | | | Concurrency |
-
-### Constraints
-
-- `PK_CustomerTaxProfile`
-- `FK_CustomerTaxProfile_Company`
-- `FK_CustomerTaxProfile_CreatedBy`
-- `FK_CustomerTaxProfile_ModifiedBy`
-- `FK_CustomerTaxProfile_DeletedBy`
-- `UQ (CompanyId, TaxProfileCode)`
-- `UQ (CompanyId, TaxProfileName)`
-- `CHECK (DefaultTaxRate >= 0)`
-- Only one default profile per Company
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_CustomerTaxProfile |
-| Non-Clustered | IX_Company (CompanyId) |
-| Non-Clustered | IX_Status (CompanyId, StatusId) |
-| Non-Clustered | IX_Default (CompanyId, IsDefault) |
-| Non-Clustered | IX_Name (CompanyId, TaxProfileName) |
-| Non-Clustered | IX_GSTNumber (GSTNumber) |
-
-### Relationships
-
-- `Company (1) -> (N) CustomerTaxProfile`
-- `CustomerTaxProfile (1) -> (N) Customer`
-
-### Business Rules
-
-- TaxProfileCode generated through NumberSeries.
-- Profile name must be unique within Company.
-- Tax exempt customers cannot have a non-zero default tax rate.
-- Cannot delete while assigned to Customers.
-- Soft delete only.
-
-### Sample Seed Data
-
-| Code | Profile | Tax Type | Rate % |
-|---|---|---|---|
-| TP-001 | Registered | Registered | 18.00 |
-| TP-002 | Unregistered | Unregistered | 18.00 |
-| TP-003 | Zero Rated | Registered | 0.00 |
-| TP-004 | Exempt | Exempt | 0.00 |
-
-### Events Published
-
-- `CustomerTaxProfileCreated`
-- `CustomerTaxProfileUpdated`
-- `CustomerTaxProfileActivated`
-- `CustomerTaxProfileInactivated`
-
-### Developer Notes
-
-This table stores default customer tax configuration. Actual tax calculations are performed by the Tax Engine during transaction posting.
-
----
-
 ## 009 Customer
 
 **Classification:** Master (Aggregate Root)
@@ -806,7 +708,7 @@ Represents the primary customer master used across Sales, Rental, Service and Ac
 
 ### Dependencies
 
-- **Depends On:** Company, CustomerGroup, CustomerCategory, CustomerIndustry, CustomerTerritory, CustomerPriceLevel, CustomerPaymentProfile, CustomerCreditProfile, CustomerTaxProfile, User
+- **Depends On:** Company, CustomerGroup, CustomerCategory, CustomerIndustry, CustomerTerritory, CustomerPriceLevel, CustomerPaymentProfile, CustomerCreditProfile, User
 - **Referenced By:** Sales, Rental, Service, Accounting, Asset
 
 ### Database Schema
@@ -825,7 +727,7 @@ Represents the primary customer master used across Sales, Rental, Service and Ac
 | CustomerPriceLevelId | BIGINT | No | | | CustomerPriceLevel | Price Level |
 | CustomerPaymentProfileId | BIGINT | No | | | CustomerPaymentProfile | Payment Profile |
 | CustomerCreditProfileId | BIGINT | No | | | CustomerCreditProfile | Credit Profile |
-| CustomerTaxProfileId | BIGINT | No | | | CustomerTaxProfile | Tax Profile |
+| TaxConfigurationId | BIGINT | No | | | TaxConfiguration | Tax Configuration |
 | RegistrationDate | DATE | No | GETDATE() | | | Customer Since |
 | StatusId | SMALLINT | No | 1 | | Status | Status |
 | Remarks | NVARCHAR(1000) | Yes | | | | Remarks |
@@ -849,7 +751,7 @@ Represents the primary customer master used across Sales, Rental, Service and Ac
 - `FK_Customer_CustomerPriceLevel`
 - `FK_Customer_CustomerPaymentProfile`
 - `FK_Customer_CustomerCreditProfile`
-- `FK_Customer_CustomerTaxProfile`
+- `FK_Customer_TaxConfiguration`
 - `FK_Customer_CreatedBy`
 - `FK_Customer_ModifiedBy`
 - `FK_Customer_DeletedBy`
@@ -877,7 +779,7 @@ Represents the primary customer master used across Sales, Rental, Service and Ac
 - `CustomerPriceLevel (1) -> (N) Customer`
 - `CustomerPaymentProfile (1) -> (N) Customer`
 - `CustomerCreditProfile (1) -> (N) Customer`
-- `CustomerTaxProfile (1) -> (N) Customer`
+- `TaxConfiguration (1) -> (N) Customer`
 - `Customer (1) -> (N) CustomerAddress`
 - `Customer (1) -> (N) CustomerContact`
 - `Customer (1) -> (N) CustomerAttachment`

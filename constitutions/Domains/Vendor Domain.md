@@ -512,86 +512,6 @@ Lookup/master table only. Used by procurement, reporting and analytics. Always f
 
 ---
 
-## 007 VendorTaxProfile
-
-**Classification:** Configuration (Master) Table
-
-### Purpose
-
-Defines the default tax configuration assigned to vendors. Standardizes withholding tax, sales tax, VAT/GST applicability and tax reporting rules across procurement and accounting. Each Vendor references one VendorTaxProfile.
-
-### Dependencies
-
-- **Depends On:** None
-- **Referenced By:** Vendor
-
-### Database Schema
-
-| Column | Data Type | Nullable | Default | PK | FK | Description |
-|---|---|---|---|---|---|---|
-| VendorTaxProfileId | BIGINT IDENTITY(1,1) | No | Identity | Yes | | Primary Key |
-| TaxProfileCode | NVARCHAR(20) | No | | | | Unique Tax Profile Code |
-| TaxProfileName | NVARCHAR(150) | No | | | | Tax Profile Name |
-| SalesTaxApplicable | BIT | No | 1 | | | Sales Tax Applicability |
-| WithholdingTaxApplicable | BIT | No | 0 | | | Withholding Tax Applicability |
-| DefaultTaxRate | DECIMAL(5,2) | No | 0 | | | Default Tax % |
-| TaxRegistrationNumber | NVARCHAR(50) | Yes | NULL | | | Tax Registration Reference |
-| Description | NVARCHAR(500) | Yes | NULL | | | Description |
-| IsActive | BIT | No | 1 | | | Active Flag |
-| StatusId | SMALLINT | No | 1 | | | Status |
-| CreatedBy | BIGINT | No | | | | Audit |
-| CreatedDate | DATETIME2(7) | No | SYSUTCDATETIME() | | | Audit |
-| ModifiedBy | BIGINT | Yes | NULL | | | Audit |
-| ModifiedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| DeletedBy | BIGINT | Yes | NULL | | | Audit |
-| DeletedDate | DATETIME2(7) | Yes | NULL | | | Audit |
-| IsDeleted | BIT | No | 0 | | | Soft Delete |
-| RowVersion | ROWVERSION | No | Auto | | | Concurrency |
-
-### Constraints
-
-- `PK_VendorTaxProfile`
-- `UQ_VendorTaxProfile_TaxProfileCode`
-- `UQ_VendorTaxProfile_TaxProfileName`
-- `CHECK (DefaultTaxRate BETWEEN 0 AND 100)`
-- `CHECK (StatusId > 0)`
-
-### Indexes
-
-| Type | Index |
-|---|---|
-| Clustered | PK_VendorTaxProfile |
-| Non-Clustered | IX_VendorTaxProfile_Name |
-| Non-Clustered | IX_VendorTaxProfile_Code |
-| Non-Clustered | IX_VendorTaxProfile_Status (StatusId, IsDeleted, IsActive) |
-
-### Relationships
-
-- `VendorTaxProfile (1) -> (N) Vendor`
-
-### Business Rules
-
-- Tax profile code and name must be unique.
-- Default tax rate must be between 0 and 100.
-- Inactive tax profiles cannot be assigned to new vendors.
-- Tax profiles referenced by vendors cannot be physically deleted.
-- Tax settings affect procurement and accounting transactions.
-- Soft delete only; audit fields and RowVersion are mandatory.
-
-### Events Published
-
-- `VendorTaxProfileCreated`
-- `VendorTaxProfileUpdated`
-- `VendorTaxProfileActivated`
-- `VendorTaxProfileDeactivated`
-- `VendorTaxProfileDeleted`
-
-### Developer Notes
-
-Lookup/master table referenced by Vendor for default taxation behavior. Supports procurement, tax reporting and accounting integration. Filter active, non-deleted records in lookup screens.
-
----
-
 ## 008 Vendor
 
 **Classification:** Master (Aggregate Root)
@@ -602,7 +522,7 @@ Stores the master information of suppliers providing goods, services, rental ass
 
 ### Dependencies
 
-- **Depends On:** Company, Branch, VendorGroup, VendorCategory, VendorIndustry, VendorTerritory, VendorPaymentProfile, VendorRating, VendorTaxProfile
+- **Depends On:** Company, Branch, VendorGroup, VendorCategory, VendorIndustry, VendorTerritory, VendorPaymentProfile, VendorRating
 - **Referenced By:** VendorAddress, VendorContact, VendorAttachment, VendorNote, VendorActivity, VendorTimeline, Purchase modules
 
 ### Database Schema
@@ -621,7 +541,7 @@ Stores the master information of suppliers providing goods, services, rental ass
 | VendorTerritoryId | BIGINT | Yes | NULL | | VendorTerritory | Vendor Territory |
 | VendorPaymentProfileId | BIGINT | Yes | NULL | | VendorPaymentProfile | Payment Profile |
 | VendorRatingId | BIGINT | Yes | NULL | | VendorRating | Rating |
-| VendorTaxProfileId | BIGINT | Yes | NULL | | VendorTaxProfile | Tax Profile |
+| TaxConfigurationId | BIGINT | Yes | NULL | | TaxConfiguration | Tax Configuration |
 | Email | NVARCHAR(255) | Yes | NULL | | | Primary Email |
 | Phone | NVARCHAR(50) | Yes | NULL | | | Primary Phone |
 | Mobile | NVARCHAR(50) | Yes | NULL | | | Primary Mobile |
@@ -650,7 +570,7 @@ Stores the master information of suppliers providing goods, services, rental ass
 - `FK_Vendor_VendorTerritory` → VendorTerritory
 - `FK_Vendor_VendorPaymentProfile` → VendorPaymentProfile
 - `FK_Vendor_VendorRating` → VendorRating
-- `FK_Vendor_VendorTaxProfile` → VendorTaxProfile
+- `FK_Vendor_TaxConfiguration` → TaxConfiguration
 - `UQ_Vendor_VendorCode`
 - `UQ_Vendor_CompanyId_VendorName`
 - `CHECK (StatusId > 0)`
