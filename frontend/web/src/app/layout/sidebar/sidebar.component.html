@@ -1,0 +1,60 @@
+<aside
+  class="erp-sidebar"
+  [class.collapsed]="state.isCollapsed()"
+  [class.mobile-open]="state.isMobileOpen()"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <!-- Logo -->
+  <div class="erp-sidebar__header">
+    @if (!state.isCollapsed()) {
+      <span class="erp-sidebar__logo-text">RentalERP</span>
+    } @else {
+      <span class="erp-sidebar__logo-icon">ERP</span>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="erp-sidebar__nav">
+    @for (group of menuGroups; track group.id) {
+      <div class="erp-sidebar__group">
+        @if (!state.isCollapsed()) {
+          <span class="erp-sidebar__group-label">{{ group.label }}</span>
+        }
+        @for (item of group.items; track item.id) {
+          <a
+            class="erp-sidebar__item"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [pTooltip]="state.isCollapsed() ? item.label : ''"
+            tooltipPosition="right"
+          >
+            <i [class]="'erp-sidebar__icon ' + item.icon"></i>
+            @if (!state.isCollapsed()) {
+              <span class="erp-sidebar__label">{{ item.label }}</span>
+              @if (item.badge) {
+                <span class="erp-sidebar__badge">{{ item.badge }}</span>
+              }
+            }
+          </a>
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- Footer -->
+  <div class="erp-sidebar__footer">
+    <button
+      class="erp-sidebar__collapse-btn"
+      type="button"
+      (click)="state.toggle()"
+      [attr.aria-label]="state.isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <i [class]="state.isCollapsed() ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></i>
+      @if (!state.isCollapsed()) {
+        <span>Collapse</span>
+      }
+    </button>
+  </div>
+</aside>

@@ -1,0 +1,61 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>RentalERP</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="login()" class="login-form" novalidate>
+      @if (errorMessage()) {
+        <div class="login-error" role="alert">
+          <i class="pi pi-exclamation-circle"></i>
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          pInputText
+          type="text"
+          formControlName="username"
+          placeholder="Enter your username"
+          class="w-full"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          placeholder="Enter your password"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="field-row">
+        <p-checkbox
+          formControlName="rememberMe"
+          [binary]="true"
+          label="Remember me"
+          inputId="rememberMe"
+        />
+      </div>
+
+      <p-button
+        type="submit"
+        label="Sign In"
+        icon="pi pi-sign-in"
+        [loading]="isLoading()"
+        styleClass="w-full"
+      />
+    </form>
+  </div>
+</div>

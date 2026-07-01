@@ -1,0 +1,19 @@
+<div class="erp-shell" [attr.data-theme]="theme.currentTheme().mode">
+  <app-sidebar />
+
+  <div class="erp-main" [class.sidebar-collapsed]="sidebar.isCollapsed()">
+    <app-topbar />
+    <main class="erp-content">
+      <router-outlet />
+    </main>
+  </div>
+
+  @if (sidebar.isMobileOpen()) {
+    <div
+      class="erp-backdrop"
+      (click)="sidebar.closeMobile()"
+      (keydown.escape)="sidebar.closeMobile()"
+      role="presentation"
+    ></div>
+  }
+</div>

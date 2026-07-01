@@ -1,0 +1,142 @@
+.erp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--topbar-height);
+  background: var(--color-topbar-bg);
+  border-bottom: 1px solid var(--color-topbar-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-4);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
+
+.erp-topbar__breadcrumb {
+  flex: 1;
+  min-width: 0;
+}
+
+.erp-topbar__spacer {
+  flex: 1;
+}
+
+// ─── Icon buttons ─────────────────────────────────────────────────────────────
+.erp-topbar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--easing-default),
+              color var(--duration-fast) var(--easing-default);
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  .pi {
+    font-size: 1rem;
+  }
+}
+
+// ─── Toggle visibility ────────────────────────────────────────────────────────
+.erp-topbar__toggle {
+  @media (max-width: 767px) { display: none; }
+}
+
+.erp-topbar__toggle-mobile {
+  display: none;
+  @media (max-width: 767px) { display: flex; }
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+.erp-topbar__notif-wrapper {
+  position: relative;
+}
+
+.erp-topbar__notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--color-danger);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-full);
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  padding: 0 3px;
+  pointer-events: none;
+}
+
+// ─── User button ──────────────────────────────────────────────────────────────
+.erp-topbar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 36px;
+  padding: 0 var(--space-2) 0 var(--space-1);
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--easing-default);
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+}
+
+.erp-topbar__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .pi {
+    font-size: 0.875rem;
+  }
+}
+
+.erp-topbar__username {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 767px) { display: none; }
+}
+
+.erp-topbar__chevron {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+}

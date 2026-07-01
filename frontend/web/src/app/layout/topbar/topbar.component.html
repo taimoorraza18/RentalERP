@@ -1,0 +1,68 @@
+<header class="erp-topbar">
+  <!-- Desktop sidebar toggle -->
+  <button
+    class="erp-topbar__btn erp-topbar__toggle"
+    type="button"
+    (click)="toggleSidebar()"
+    aria-label="Toggle sidebar"
+  >
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <!-- Mobile sidebar toggle -->
+  <button
+    class="erp-topbar__btn erp-topbar__toggle-mobile"
+    type="button"
+    (click)="toggleMobileSidebar()"
+    aria-label="Open menu"
+  >
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <app-breadcrumb class="erp-topbar__breadcrumb" />
+
+  <span class="erp-topbar__spacer"></span>
+
+  <!-- Search -->
+  <button class="erp-topbar__btn" type="button" title="Search">
+    <i class="pi pi-search"></i>
+  </button>
+
+  <!-- Notifications -->
+  <div class="erp-topbar__notif-wrapper">
+    <button class="erp-topbar__btn" type="button" title="Notifications">
+      <i class="pi pi-bell"></i>
+    </button>
+    @if (notificationCount() > 0) {
+      <span class="erp-topbar__notif-badge">{{ notificationCount() }}</span>
+    }
+  </div>
+
+  <!-- Theme toggle -->
+  <button
+    class="erp-topbar__btn"
+    type="button"
+    (click)="toggleTheme()"
+    [title]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+  >
+    <i [class]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"></i>
+  </button>
+
+  <!-- User menu trigger -->
+  <button
+    class="erp-topbar__user"
+    type="button"
+    (click)="openUserMenu($event)"
+    aria-haspopup="true"
+  >
+    <div class="erp-topbar__avatar">
+      <i class="pi pi-user"></i>
+    </div>
+    <span class="erp-topbar__username">
+      {{ currentUser()?.fullName || currentUser()?.username || 'User' }}
+    </span>
+    <i class="pi pi-chevron-down erp-topbar__chevron"></i>
+  </button>
+
+  <p-menu #userMenuRef [model]="userMenuItems" [popup]="true" appendTo="body" />
+</header>

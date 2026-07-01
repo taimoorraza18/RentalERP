@@ -1,0 +1,45 @@
+.erp-shell {
+  background: var(--color-background);
+  min-height: 100vh;
+}
+
+.erp-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--duration-drawer) var(--easing-default);
+
+  &.sidebar-collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+  }
+}
+
+.erp-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--page-padding);
+
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: var(--radius-full);
+    &:hover { background: var(--color-text-muted); }
+  }
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.erp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+  z-index: 999;
+}
+
+@media (max-width: 767px) {
+  .erp-main {
+    margin-left: 0;
+  }
+}

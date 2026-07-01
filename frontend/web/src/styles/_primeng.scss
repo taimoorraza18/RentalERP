@@ -1,4 +1,210 @@
-// PrimeNG global overrides
-// Phase F4 will populate this file with theme customizations.
-// Keep this file scoped to PrimeNG component overrides only.
-// Never write feature-specific styles here.
+// PrimeNG global overrides — scoped to component class selectors only.
+// Tailwind handles layout; these overrides sync PrimeNG to design tokens.
+
+// ─── Font inheritance ─────────────────────────────────────────────────────────
+.p-component {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+}
+
+// ─── Buttons ─────────────────────────────────────────────────────────────────
+.p-button {
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--duration-fast) var(--easing-default),
+              border-color var(--duration-fast) var(--easing-default),
+              box-shadow var(--duration-fast) var(--easing-default);
+}
+
+// ─── Inputs ──────────────────────────────────────────────────────────────────
+.p-inputtext {
+  border-radius: var(--radius-md);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  transition: border-color var(--duration-fast) var(--easing-default),
+              box-shadow var(--duration-fast) var(--easing-default);
+
+  &:enabled:focus {
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 1px var(--color-border-focus);
+  }
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+.p-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+// ─── Dialog ───────────────────────────────────────────────────────────────────
+.p-dialog {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+
+  .p-dialog-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: var(--space-4) var(--space-6);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .p-dialog-content {
+    background: var(--color-surface);
+    padding: var(--space-6);
+  }
+
+  .p-dialog-footer {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-4) var(--space-6);
+  }
+}
+
+// ─── DataTable ────────────────────────────────────────────────────────────────
+.p-datatable {
+  .p-datatable-header {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .p-datatable-thead > tr > th {
+    background: var(--color-surface-secondary);
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .p-datatable-tbody > tr {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+
+    > td {
+      border-color: var(--color-border);
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+.p-toast {
+  .p-toast-message {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+// ─── Menu ─────────────────────────────────────────────────────────────────────
+.p-menu {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-1) 0;
+
+  .p-menuitem-link {
+    border-radius: var(--radius-md);
+    margin: var(--space-1) var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .p-menuitem-icon {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+// ─── Tag ──────────────────────────────────────────────────────────────────────
+.p-tag {
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px var(--space-2);
+}
+
+// ─── Badge ────────────────────────────────────────────────────────────────────
+.p-badge {
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+// ─── Sidebar / Drawer ─────────────────────────────────────────────────────────
+.p-sidebar,
+.p-drawer {
+  background: var(--color-surface);
+  border: none;
+  box-shadow: var(--shadow-xl);
+}
+
+// ─── Breadcrumb ───────────────────────────────────────────────────────────────
+.p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .p-breadcrumb-list li .p-menuitem-link {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+
+    .p-menuitem-icon {
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+// ─── Confirm Dialog ───────────────────────────────────────────────────────────
+.p-confirm-dialog {
+  .p-confirm-dialog-icon {
+    font-size: 2rem;
+  }
+}
+
+// ─── Scrollbars (global) ─────────────────────────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-full);
+
+  &:hover {
+    background: var(--color-text-muted);
+  }
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
